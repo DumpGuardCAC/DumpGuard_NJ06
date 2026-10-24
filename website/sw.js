@@ -1,7 +1,7 @@
-const CACHE = 'dumpguard-v10';
+const CACHE = 'dumpguard-v11';
 const SHELL = [
   '/', '/index.html', '/styles.css', '/manifest.json', '/es.json', '/icon.png',
-  '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js',
+  '/js/boot.js', '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js',
   '/lib/tf.min.js', '/lib/model.json', '/lib/model.bin',
 ];
 
