@@ -67,17 +67,13 @@
     "items": "artículos verificados"
   },
   "photo": {
-    "scan": "Escanear con la cámara",
-    "stop": "Detener",
+    "take": "Tomar una foto",
     "upload": "O suba una foto",
-    "reading": "Preparando la cámara...",
-    "hold": "Acerque la cámara al objeto",
     "looking": "Mirando la foto...",
     "sure": "Parece",
     "unsure": "No estoy seguro de qué es. Elija una categoría abajo.",
     "none": "No se encontró ningún objeto. Acérquese más o elija una categoría abajo.",
     "fail": "No se pudo iniciar el reconocimiento de fotos. Elija una categoría abajo.",
-    "nocam": "La cámara no está disponible. Permita el acceso a la cámara o suba una foto.",
     "local": "La foto se queda en su dispositivo."
   },
   "labels": {
