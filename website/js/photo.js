@@ -7,6 +7,7 @@
   const SIZE = 224;
   const TEMPERATURE = 1.9;
   const THRESHOLD = 0.65;
+  const HAZARD_THRESHOLD = 0.85;
 
   const S = {
     en: {
@@ -60,7 +61,8 @@
   const decide = probs => {
     const p = calibrate(probs, TEMPERATURE);
     const best = p.indexOf(Math.max(...p));
-    return { cls: CLASSES[best], confidence: p[best], sure: p[best] >= THRESHOLD };
+    const cls = CLASSES[best];
+    return { cls, confidence: p[best], sure: p[best] >= (cls === 'ewaste_hazard' ? HAZARD_THRESHOLD : THRESHOLD) };
   };
 
   const frame = document.createElement('canvas');
@@ -78,7 +80,10 @@
 
   const classifyImage = async img => {
     const model = await loadModel();
-    frameCtx.drawImage(img, 0, 0, SIZE, SIZE);
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    const side = Math.min(w, h);
+    frameCtx.drawImage(img, (w - side) / 2, (h - side) / 2, side, side, 0, 0, SIZE, SIZE);
     return decide(await predict(model));
   };
 
