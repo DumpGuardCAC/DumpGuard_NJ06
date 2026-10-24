@@ -18,7 +18,7 @@ for (src, cls), g in df.groupby(["source", "cls"]):
     parts.append(g)
 df = pd.concat(parts, ignore_index=True)
 
-groups = df.loc[~df.source.isin(["zerowaste_test", "synth"]), "group"].unique()
+groups = df.loc[~df.source.isin(["zerowaste_test", "scrape"]), "group"].unique()
 rng = np.random.RandomState(0)
 rng.shuffle(groups)
 n = len(groups)
@@ -29,7 +29,7 @@ te_g = set(groups[int(n * 0.075): int(n * 0.15)])
 def split(r):
     if r.source == "zerowaste_test":
         return "ext_test"
-    if r.source == "synth":
+    if r.source == "scrape":
         return "train"
     if r.group in val_g:
         return "val"

@@ -84,8 +84,8 @@ for sub, cls in (("hazard", "ewaste_hazard"), ("background", "no_object"), ("pap
         jobs.append(("oi", os.path.basename(f), cls, f, None, False))
 
 for cls in CLASSES:
-    for f in sorted(glob.glob(f"data/synthetic/{cls}/*.jpg")):
-        jobs.append(("synth", os.path.basename(f), cls, f, None, False))
+    for f in sorted(glob.glob(f"data/scraped/{cls}/*.jpg")):
+        jobs.append(("scrape", os.path.basename(f), cls, f, None, False))
 
 zw = "data/zerowaste/extract/splits_final_deblurred"
 ZW = {"cardboard": "cardboard_paper", "metal": "metal", "rigid_plastic": "rigid_plastic", "soft_plastic": "soft_plastic_foam"}
