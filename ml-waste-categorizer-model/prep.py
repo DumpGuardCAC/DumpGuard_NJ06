@@ -2,7 +2,7 @@ import os, json, glob, random, hashlib
 import pandas as pd
 from PIL import Image, ImageOps
 from concurrent.futures import ThreadPoolExecutor
-from common import square_crop
+from common import CLASSES, square_crop
 
 random.seed(0)
 D = "data"
@@ -78,10 +78,14 @@ for a in t["annotations"]:
     im = imgs[a["image_id"]]
     jobs.append(("taco", f"{a['image_id']}", cls, f"{D}/taco/{im['file_name']}", (x, y, w, h), True))
 
-for sub, cls in (("hazard", "ewaste_hazard"), ("background", "no_object")):
+for sub, cls in (("hazard", "ewaste_hazard"), ("background", "no_object"), ("paper", "cardboard_paper")):
     fs = sorted(glob.glob(f"{D}/openimages/img/{sub}/*.jpg"))
     for f in fs:
         jobs.append(("oi", os.path.basename(f), cls, f, None, False))
+
+for cls in CLASSES:
+    for f in sorted(glob.glob(f"data/synthetic/{cls}/*.jpg")):
+        jobs.append(("synth", os.path.basename(f), cls, f, None, False))
 
 zw = "data/zerowaste/extract/splits_final_deblurred"
 ZW = {"cardboard": "cardboard_paper", "metal": "metal", "rigid_plastic": "rigid_plastic", "soft_plastic": "soft_plastic_foam"}

@@ -43,20 +43,28 @@ def ids(names):
 hazard = {"Battery", "Light bulb", "Incandescent light bulb", "Fluorescent lamp", "Compact fluorescent lamp", "Mobile phone", "Laptop", "Motherboard", "Battery charger", "Remote control", "Computer keyboard", "Printer", "Headphones", "Calculator", "Television", "Camera"}
 background_ok = {"Table", "Countertop", "Floor", "Wall", "Desk", "Human hand", "Human face", "Person", "Tree", "Building", "Sky", "Grass", "Road", "Plant", "Furniture", "Kitchen", "Room", "Street", "Footwear", "Clothing", "Dog", "Cat", "Car", "Window", "Door", "Chair", "Couch", "Carpet"}
 background_bad = {"Bottle", "Can", "Tin can", "Box", "Cup", "Plastic bag", "Packaged goods", "Drink", "Food", "Container", "Glass", "Waste container", "Jar", "Mug", "Coffee cup", "Wine glass", "Beer", "Packaging and labeling", "Paper", "Cardboard", "Mobile phone", "Laptop", "Computer", "Television", "Battery", "Light bulb", "Tableware", "Bowl", "Plate", "Wine", "Soft drink", "Water bottle", "Cocktail", "Juice", "Milk", "Fast food", "Snack", "Candy"}
+paper = {"Book", "Envelope", "Paper towel", "Newspaper", "Notebook", "Stationery"}
 hazard_ids, ok_ids, bad_ids = ids(hazard), ids(background_ok), ids(background_bad)
+paper_ids = ids(paper)
 
 hazard_images = {}
 background_images = []
+paper_images = []
 for image_id, found in labels_by_image.items():
     hits = found & hazard_ids
-    if hits:
+    if found & paper_ids:
+        if not hits and not found & bad_ids - paper_ids:
+            paper_images.append(image_id)
+    elif hits:
         hazard_images[image_id] = hits
     elif found & ok_ids and not found & bad_ids:
         background_images.append(image_id)
-print("hazard", len(hazard_images), "bg candidates", len(background_images))
+print("hazard", len(hazard_images), "bg candidates", len(background_images), "paper", len(paper_images))
 print(Counter(name for hits in hazard_images.values() for name in hits))
 random.shuffle(background_images)
 background_images = background_images[:1800]
+random.shuffle(paper_images)
+paper_images = paper_images[:1500]
 
 
 def download(job):
@@ -73,7 +81,7 @@ def download(job):
         pass
 
 
-jobs = [(i, "hazard") for i in hazard_images] + [(i, "background") for i in background_images]
+jobs = [(i, "hazard") for i in hazard_images] + [(i, "background") for i in background_images] + [(i, "paper") for i in paper_images]
 with ThreadPoolExecutor(16) as ex:
     list(ex.map(download, jobs))
 print("done")

@@ -9,7 +9,7 @@ SUF = "" if int(os.environ.get("DG_S", 256)) == 256 else "_" + os.environ["DG_S"
 df = pd.read_csv(f"data/manifest_all{SUF}.csv")
 
 CAP = {("oi", "ewaste_hazard"): 900, ("oi", "no_object"): 1500, ("garbage12", "no_object"): 500,
-       ("trashnet", "*"): 400}
+       ("trashnet", "*"): 400, ("oi", "cardboard_paper"): 1200}
 parts = []
 for (src, cls), g in df.groupby(["source", "cls"]):
     cap = CAP.get((src, cls), CAP.get((src, "*"), None))
@@ -18,7 +18,7 @@ for (src, cls), g in df.groupby(["source", "cls"]):
     parts.append(g)
 df = pd.concat(parts, ignore_index=True)
 
-groups = df.loc[df.source != "zerowaste_test", "group"].unique()
+groups = df.loc[~df.source.isin(["zerowaste_test", "synth"]), "group"].unique()
 rng = np.random.RandomState(0)
 rng.shuffle(groups)
 n = len(groups)
@@ -29,6 +29,8 @@ te_g = set(groups[int(n * 0.075): int(n * 0.15)])
 def split(r):
     if r.source == "zerowaste_test":
         return "ext_test"
+    if r.source == "synth":
+        return "train"
     if r.group in val_g:
         return "val"
     if r.group in te_g:
