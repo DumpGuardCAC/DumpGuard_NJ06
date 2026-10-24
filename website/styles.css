@@ -33,6 +33,8 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 label{display:block;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
 .drop{display:grid;place-items:center;text-align:center;border:1px dashed #9fb3c4;border-radius:14px;padding:32px 20px;cursor:pointer;color:var(--muted);background:#fff;text-transform:none!important;letter-spacing:0!important;font-size:1rem!important}
 .drop.flush{margin-top:0}
+.scan{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#000;margin:10px 0}.scan[hidden]{display:none}.scan video{width:100%;height:100%;object-fit:cover;display:block}.scan-frame{position:absolute;inset:14%;border:2px solid rgba(255,255,255,.85);border-radius:12px;pointer-events:none}.scan-status{position:absolute;left:0;right:0;bottom:0;margin:0;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;font-size:.95rem;text-align:center}
+h1[tabindex="-1"],h2[tabindex="-1"]{outline:none}
 .drop:hover{border-color:var(--blue);color:var(--blue)}.drop img{max-width:100%;max-height:220px;border-radius:10px}
 .card{background:#fff;border-radius:14px;padding:30px;box-shadow:0 20px 50px -25px rgba(15,23,42,.25);min-height:200px}
 .card.track{margin-top:50px}
