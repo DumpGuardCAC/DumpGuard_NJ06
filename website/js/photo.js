@@ -292,8 +292,9 @@
         return;
       }
       if (r.sure) {
-        note.textContent = `${str('sure')}: ${DG.material(r.cls)} (${pct(r.confidence)}). ${str('local')}`;
+        note.textContent = `${DG.material(r.cls)}. ${str('local')}`;
         DG.showMaterial(r.cls);
+        return;
       } else {
         note.textContent = str('unsure');
       }

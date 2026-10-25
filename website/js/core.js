@@ -7,7 +7,7 @@
   const T = {
     en: {
       placeholder: 'couch, TV, battery', empty: 'Your disposal guide will appear here.', searching: 'Searching...', none: 'No match. Pick a category instead, or try another word.',
-      didyou: 'Other matches', recycling: 'Recycle', trash: 'Trash', special_dropoff: 'Special drop-off', hazard: 'Hazardous: do not put in the bin',
+      didyou: 'Other matches', yesRecycle: 'Yes, recyclable', noRecycle: 'No, not recyclable', noTrash: 'Put it in the trash.', noSpecial: 'Take it to a special drop-off. Do not put it in the bin.', examples: 'See specific items', recycling: 'Recycle', trash: 'Trash', special_dropoff: 'Special drop-off', hazard: 'Hazardous: do not put in the bin',
       gotit: 'Got it, counted anonymously', thanks: 'Thanks, counted anonymously.',
       wrong: 'Report a wrong answer', send: 'Send', cancel: 'Cancel', whatwrong: 'What is wrong or missing?', sent: 'Thanks. A person will check it against the official source.',
       tooLong: 'Use 3 to 500 characters.',
@@ -282,13 +282,20 @@
       const b = r.body;
       box.appendChild(h('h3', {}, t('materials')[cls] || cls));
       if (cls === 'plastic') box.appendChild(h('p', { class: 'sm' }, t('plasticNote')));
-      if (b.consensus) {
-        box.appendChild(h('span', { class: 'tag', style: paint(COLORS[b.consensus.rule]) }, t(b.consensus.rule)));
-        box.appendChild(h('p', { class: 'sm' }, `${t('consensus')} (${t('basedOn')} ${b.consensus.based_on} ${t('items')})`));
+      const tally = {};
+      for (const it of b.items) tally[it.resolved.rule] = (tally[it.resolved.rule] || 0) + 1;
+      const top = Object.keys(tally).sort((x, y) => tally[y] - tally[x])[0];
+      const rule = b.consensus?.rule || top;
+      if (rule) {
+        const yes = rule === 'recycling';
+        box.appendChild(h('span', { class: 'tag', style: paint(yes ? COLORS.recycling : COLORS.trash) }, yes ? t('yesRecycle') : t('noRecycle')));
+        if (!yes) box.appendChild(h('p', { class: 'sm' }, rule === 'special_dropoff' ? t('noSpecial') : t('noTrash')));
       }
+      const more = h('details', { class: 'zone-more' }, h('summary', {}, t('examples')));
       for (const it of b.items.slice(0, 8)) {
-        box.appendChild(resultRow(it, () => renderResults([{ id: it.id, name: it.name, material: it.material, hazard: it.hazard, resolved: it.resolved }])));
+        more.appendChild(resultRow(it, () => renderResults([{ id: it.id, name: it.name, material: it.material, hazard: it.hazard, resolved: it.resolved }])));
       }
+      box.appendChild(more);
     } catch {
       if (mine === seq) showFail($('result'));
     }
