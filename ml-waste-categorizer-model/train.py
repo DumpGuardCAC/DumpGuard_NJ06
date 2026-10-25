@@ -9,9 +9,13 @@ from common import CLASSES, C2I
 SMOKE = "--smoke" in sys.argv
 IMG = int(os.environ.get("DG_IMG", 224))
 MAN = os.environ.get("DG_MANIFEST", "data/manifest.csv")
-BS = 64
+BS = int(os.environ.get("DG_BS", 64))
+WORKERS = int(os.environ.get("DG_WORKERS", 8))
 OUT = next((a for a in sys.argv[1:] if not a.startswith("--")), "out/run1")
 os.makedirs(OUT, exist_ok=True)
+torch.backends.cudnn.benchmark = True
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
 keras.utils.set_random_seed(0)
 keras.mixed_precision.set_global_policy("mixed_bfloat16")
 
@@ -47,7 +51,7 @@ class DS(Dataset):
         if self.aug and torch.rand(1) < 0.2:
             x = (x.float() + torch.randn(x.shape) * 8).clamp(0, 255).to(torch.uint8)
         w = self.cw[self.y[i]] if self.aug else 1.0
-        return x.permute(1, 2, 0).float(), self.y[i], torch.tensor(w, dtype=torch.float32)
+        return x.permute(1, 2, 0).contiguous(), self.y[i], torch.tensor(w, dtype=torch.float32)
 
 
 class Prog(keras.callbacks.Callback):
@@ -62,7 +66,7 @@ def _winit(_):
 
 def loader(split, aug, shuffle, cw=None):
     d = df[df.split == split]
-    return DataLoader(DS(d, aug, cw), batch_size=BS, shuffle=shuffle, num_workers=0 if SMOKE else 8,
+    return DataLoader(DS(d, aug, cw), batch_size=BS, shuffle=shuffle, num_workers=0 if SMOKE else WORKERS,
                       persistent_workers=not SMOKE, drop_last=aug, worker_init_fn=_winit,
                       prefetch_factor=None if SMOKE else 4)
 

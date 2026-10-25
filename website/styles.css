@@ -272,8 +272,15 @@ a,button,.btn,.li,.drop,#tabs{touch-action:manipulation}
 html.cam-on,html.cam-on body{overflow:hidden}
 .cam{position:fixed;inset:0;z-index:3500;background:#000;color:#fff;animation:camIn .35s var(--spring) both}
 @keyframes camIn{from{opacity:0}to{opacity:1}}
-.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cam-frame{position:absolute;left:50%;top:50%;translate:-50% -50%;width:min(100vw,100vh);aspect-ratio:1;border:2px solid rgba(255,255,255,.55);pointer-events:none}
+.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center}
+.cam{touch-action:none}
+.cam-box{position:absolute;left:0;top:0;width:0;height:0;border:2px solid #fff;border-radius:12px;box-shadow:0 0 0 1px rgba(0,0,0,.35);pointer-events:none;transition:transform .3s var(--spring),width .3s var(--spring),height .3s var(--spring),opacity .2s}
+.cam-box.idle{opacity:.35}
+.cam-box span{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);padding:3px 9px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cam-box.idle span{display:none}
+.cam-zoom{display:flex;justify-content:center;gap:8px}
+.cam-z{font:inherit;font-weight:600;font-size:.85rem;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.4);color:#fff;background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);cursor:pointer}
+.cam-z[aria-pressed=true]{background:#fff;color:var(--slate);border-color:#fff}
 .cam-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;background:linear-gradient(rgba(0,0,0,.45),transparent);font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .cam-bottom{position:absolute;left:0;right:0;bottom:0;display:grid;gap:12px;padding:40px 16px calc(20px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.55))}
 .cam-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;min-height:44px;align-items:center;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.6)}

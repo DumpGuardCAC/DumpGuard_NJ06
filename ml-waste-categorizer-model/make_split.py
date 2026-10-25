@@ -65,7 +65,7 @@ print("train near-duplicates of eval images dropped:", len(drop))
 df = df.drop(index=list(drop)).reset_index(drop=True)
 LIMIT = {"train": 4800, "val": 300, "test_id": 300}
 SHARE = {"scrape": 0.3, "zerowaste": 0.4}
-BOOST = {"taco": 1}
+BOOST = {"taco": 1, "oiother": 1}
 
 
 def fair(g, lim):
