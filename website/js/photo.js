@@ -5,7 +5,7 @@
   const MODEL_URL = 'lib/model.json';
   const CLASSES = ['rigid_plastic', 'soft_plastic_foam', 'cardboard_paper', 'metal', 'glass', 'ewaste_hazard', 'no_object'];
   const SIZE = 224;
-  const TEMPERATURE = 1.9;
+  const TEMPERATURE = 1.8;
   const THRESHOLD = 0.65;
   const HAZARD_THRESHOLD = 0.85;
 

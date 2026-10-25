@@ -1,4 +1,4 @@
-const CACHE = 'dumpguard-v17';
+const CACHE = 'dumpguard-v18';
 const SHELL = [
   '/', '/index.html', '/styles.css', '/manifest.json', '/es.json', '/icon.png',
   '/js/boot.js', '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js',
