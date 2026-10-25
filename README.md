@@ -2,4 +2,11 @@
 
 **An AI-assisted full waste management & recycling contamination solution.** Built for the Congressional App Challenge 2026, District NJ-06 (Rep. Frank Pallone Jr.).
 
-[Live Web App](https://dumpguard.vercel.app/) | [Demo Video](https://youtu.be)
+[Live Web App](https://dumpguard.vercel.app/) | [Devpost Submission](https://devpost.com) | [Demo Video](https://youtu.be)
+
+## The Idea
+
+Single-stream recycling programs face severe contamination rates due to "wish-cycling" (sorting non-recyclables like Styrofoam or grocery bags into blue bins), which damages public sorting machinery at facilities like the Middlesex County Improvement Authority (MCIA) and the Monmouth County Reclamation Center. 
+
+DumpGuard solves this issue by acting as an AI-assisted ecosystem spanning a responsive Web Dashboard and a native Android application. It executes real-time, privacy-first computer vision material classification directly on-device, provides smart calendars tailored strictly to local NJ-06 zip codes, offers a client-side fuzzy-search directory fallback for multi-material sorting rules, and features a mockup API for scheduling municipal bulk pickups.
+
