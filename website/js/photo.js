@@ -117,6 +117,112 @@
     return (w * d) / (a.w * a.h + b.w * b.h - w * d);
   };
 
+  const PROBE = 64;
+  const probe = document.createElement('canvas');
+  const probeCtx = probe.getContext('2d', { willReadFrequently: true });
+
+  const otsu = (vals, bins, max) => {
+    const hist = new Array(bins).fill(0);
+    vals.forEach(v => { hist[Math.min(bins - 1, Math.floor((v / max) * bins))]++; });
+    let sum = 0;
+    hist.forEach((c, i) => { sum += i * c; });
+    let wb = 0;
+    let sb = 0;
+    let bestVar = -1;
+    let cut = 0;
+    for (let i = 0; i < bins; i++) {
+      wb += hist[i];
+      if (!wb) continue;
+      const wf = vals.length - wb;
+      if (!wf) break;
+      sb += i * hist[i];
+      const v = wb * wf * (sb / wb - (sum - sb) / wf) ** 2;
+      if (v > bestVar) { bestVar = v; cut = i; }
+    }
+    return ((cut + 1) / bins) * max;
+  };
+
+  const tighten = (source, box, vw, vh) => {
+    const pad = 0.35;
+    const ex = Math.max(0, box.x - box.w * pad);
+    const ey = Math.max(0, box.y - box.h * pad);
+    const ew = Math.min(vw, box.x + box.w * (1 + pad)) - ex;
+    const eh = Math.min(vh, box.y + box.h * (1 + pad)) - ey;
+    const sc = PROBE / Math.max(ew, eh);
+    const pw = Math.max(8, Math.round(ew * sc));
+    const ph = Math.max(8, Math.round(eh * sc));
+    probe.width = pw;
+    probe.height = ph;
+    probeCtx.drawImage(source, ex, ey, ew, eh, 0, 0, pw, ph);
+    const px = probeCtx.getImageData(0, 0, pw, ph).data;
+    const ring = [[], [], []];
+    for (let y = 0; y < ph; y++) {
+      for (let x = 0; x < pw; x++) {
+        if (x > 1 && y > 1 && x < pw - 2 && y < ph - 2) continue;
+        const i = (y * pw + x) * 4;
+        for (let c = 0; c < 3; c++) ring[c].push(px[i + c]);
+      }
+    }
+    const bg = ring.map(r => r.sort((a, b) => a - b)[r.length >> 1]);
+    const diff = new Float32Array(pw * ph);
+    let top = 0;
+    for (let i = 0; i < diff.length; i++) {
+      const d = Math.hypot(px[i * 4] - bg[0], px[i * 4 + 1] - bg[1], px[i * 4 + 2] - bg[2]);
+      diff[i] = d;
+      if (d > top) top = d;
+    }
+    if (top < 40) return null;
+    const cut = Math.max(22, otsu(diff, 64, top));
+    const ox0 = (box.x - ex) * sc;
+    const oy0 = (box.y - ey) * sc;
+    const ox1 = ox0 + box.w * sc;
+    const oy1 = oy0 + box.h * sc;
+    const seen = new Uint8Array(diff.length);
+    let found = null;
+    let foundScore = 0;
+    for (let start = 0; start < diff.length; start++) {
+      if (seen[start] || diff[start] <= cut) continue;
+      const stack = [start];
+      seen[start] = 1;
+      let area = 0;
+      let inside = 0;
+      let x0 = pw;
+      let y0 = ph;
+      let x1 = 0;
+      let y1 = 0;
+      while (stack.length) {
+        const i = stack.pop();
+        const x = i % pw;
+        const y = (i - x) / pw;
+        area++;
+        if (x >= ox0 && x < ox1 && y >= oy0 && y < oy1) inside++;
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+        if (x > 0 && !seen[i - 1] && diff[i - 1] > cut) { seen[i - 1] = 1; stack.push(i - 1); }
+        if (x < pw - 1 && !seen[i + 1] && diff[i + 1] > cut) { seen[i + 1] = 1; stack.push(i + 1); }
+        if (y > 0 && !seen[i - pw] && diff[i - pw] > cut) { seen[i - pw] = 1; stack.push(i - pw); }
+        if (y < ph - 1 && !seen[i + pw] && diff[i + pw] > cut) { seen[i + pw] = 1; stack.push(i + pw); }
+      }
+      if (inside > foundScore) { foundScore = inside; found = { x0, y0, x1, y1 }; }
+    }
+    if (!found) return null;
+    const grow = 0.5;
+    const w = (found.x1 - found.x0 + 1 + grow * 2) / sc;
+    const h = (found.y1 - found.y0 + 1 + grow * 2) / sc;
+    const fit = {
+      x: Math.max(0, ex + (found.x0 - grow) / sc),
+      y: Math.max(0, ey + (found.y0 - grow) / sc),
+      w,
+      h,
+    };
+    fit.w = Math.min(fit.w, vw - fit.x);
+    fit.h = Math.min(fit.h, vh - fit.y);
+    const ratio = (fit.w * fit.h) / (box.w * box.h);
+    return ratio > 0.12 && ratio < 1.6 ? fit : null;
+  };
+
   const RECTS = [[1, 0.75], [0.75, 1], [0.85, 0.55], [0.55, 0.85], [0.7, 0.7], [1, 0.5]];
   const refinements = sq => {
     const out = [];
@@ -359,7 +465,18 @@
               }
             });
             square = boxes[pick];
+            let fit = null;
+            for (let pass = 0, from = square; pass < 3; pass++) {
+              const next = tighten(video, from, video.videoWidth, video.videoHeight);
+              if (!next) break;
+              const change = Math.abs(next.w * next.h - from.w * from.h) / (from.w * from.h);
+              fit = next;
+              from = next;
+              if (change < 0.08) break;
+            }
+            if (fit) box = fit;
             const jumped = !lastBox || overlap(lastBox, box) < 0.4;
+            if (!jumped) box = { x: (lastBox.x + box.x) / 2, y: (lastBox.y + box.y) / 2, w: (lastBox.w + box.w) / 2, h: (lastBox.h + box.h) / 2 };
             smooth = smooth && !jumped ? smooth.map((v, i) => 0.6 * v + 0.4 * chosen[i]) : chosen;
             lastBox = box;
             last = summarize(smooth);
