@@ -10,3 +10,12 @@ Single-stream recycling programs face severe contamination rates due to "wish-cy
 
 DumpGuard solves this issue by acting as an AI-assisted ecosystem spanning a responsive Web Dashboard and a native Android application. It executes real-time, privacy-first computer vision material classification directly on-device, provides smart calendars tailored strictly to local NJ-06 zip codes, offers a client-side fuzzy-search directory fallback for multi-material sorting rules, and features a mockup API for scheduling municipal bulk pickups.
 
+## How it works
+
+1. **Sense.** A live device camera feed captures household items, streaming frames directly to an on-device vision subsystem.
+2. **Classify.** A quantized TensorFlow Lite/JS model processes frames locally using hardware acceleration to accurately categorize materials into 6 core disposal streams.
+3. **Fallback.** If camera confidence falls below a 65% threshold, a client-side fuzzy-search engine steps in, parsing a local 200+ multi-material lookup dictionary that safely handles typos.
+4. **Schedule & Request.** The app pulls localized municipal collection data based on regional zip codes and allows residents to dispatch bulk pickup requests directly to a mock backend API gateway.
+
+At the curb or in basements with weak cellular reception, custom Service Worker caching strategies on the web and local SQLite databases on Android guarantee full offline access to static shell interfaces, structural assets, and saved calendars.
+
