@@ -53,6 +53,8 @@
     "alerts": "Avisos",
     "counted": "artículos clasificados con DumpGuard, unas",
     "lb": "libras desviadas (estimado)",
+    "resinYes": "Plástico #1 o #2: se recicla. Vacíelo y échelo suelto en el contenedor.",
+    "resinCheck": "Revise el número en el fondo. Solo el plástico #1 y #2 se recicla.",
     "plasticNote": "Los plásticos marcados con #1 y #2 se reciclan. Los demás (#3 a #7) no.",
     "materials": {
       "plastic": "Plástico",

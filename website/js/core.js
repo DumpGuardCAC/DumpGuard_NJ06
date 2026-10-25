@@ -18,7 +18,7 @@
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
       materials: { plastic: 'Plastic', cartridges: 'Printer cartridges', rigid_plastic: 'Hard plastic', soft_plastic_foam: 'Soft plastic or foam', cardboard_paper: 'Cardboard or paper', metal: 'Metal', glass: 'Glass', ewaste_hazard: 'Electronics or hazardous', other: 'Other' },
-      plasticNote: 'Plastics marked #1 and #2 are recyclable. All other plastics (#3 to #7) are not.', consensus: 'In your town most of these are:', basedOn: 'based on', items: 'verified items',
+      resinYes: 'Plastic #1 or #2: recyclable. Empty it and leave it loose in the bin.', resinCheck: 'Check the number on the bottom. Only plastic #1 and #2 is recyclable.', plasticNote: 'Plastics marked #1 and #2 are recyclable. All other plastics (#3 to #7) are not.', consensus: 'In your town most of these are:', basedOn: 'based on', items: 'verified items',
     },
   };
   const COLORS = { recycling: '#15803d', trash: '#4b5563', special_dropoff: '#dc2626' };
@@ -164,6 +164,12 @@
     }
   };
 
+  const RESIN_12 = new Set(['plastic-water-bottle', 'plastic-soda-bottle', 'plastic-juice-bottle', 'milk-jug', 'detergent-bottle', 'shampoo-bottle', 'mouthwash-bottle', 'cooking-oil-bottle', 'peanut-butter-jar-plastic', 'bleach-bottle']);
+  const resinNote = it => {
+    if (it.material !== 'rigid_plastic' || it.resolved.rule !== 'recycling') return '';
+    return RESIN_12.has(it.id) ? t('resinYes') : t('resinCheck');
+  };
+
   const card = it => {
     const r = it.resolved;
     const rule = r.rule;
@@ -171,6 +177,7 @@
     if (it.hazard && rule === 'special_dropoff') el.appendChild(h('p', { class: 'err' }, t('hazard')));
     const note = pick(r.note);
     if (note) el.appendChild(h('p', {}, note));
+    if (resinNote(it)) el.appendChild(h('p', { class: 'sm' }, resinNote(it)));
     if (r.check_local) el.appendChild(h('p', { class: 'notice show' }, pick(r.message)));
     const holder = h('div', {});
     el.appendChild(holder);

@@ -649,6 +649,33 @@
       "county_rules": {}
     },
     {
+      "id": "3d-print",
+      "name": {
+        "en": "3D printed object",
+        "es": "Objeto impreso en 3D"
+      },
+      "aliases": [
+        "3d print",
+        "3d printing",
+        "3d printed",
+        "failed print",
+        "pla",
+        "petg",
+        "abs filament",
+        "filament",
+        "3d printer waste"
+      ],
+      "material": "rigid_plastic",
+      "default_rule": "trash",
+      "hazard": false,
+      "varies_by_town": false,
+      "prep": {
+        "en": "PLA, PETG and ABS prints and supports are not curbside recyclable. Put them in the trash, or reuse the filament scraps.",
+        "es": "Las piezas y soportes de PLA, PETG y ABS no se reciclan en la acera. Póngalos en la basura o reutilice los restos de filamento."
+      },
+      "county_rules": {}
+    },
+    {
       "id": "plastic-hanger",
       "name": {
         "en": "Plastic clothes hanger",
