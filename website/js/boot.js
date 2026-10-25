@@ -5,6 +5,15 @@
   let box = null;
   let failed = false;
   let done = false;
+  const MIN_INTRO = 1800;
+  const started = Date.now();
+  const intro = (() => {
+    try {
+      return matchMedia('(min-width: 900px) and (hover: hover)').matches && !localStorage.getItem('dg-seen');
+    } catch {
+      return false;
+    }
+  })();
 
   const el = (tag, css, text) => {
     const node = document.createElement(tag);
@@ -56,9 +65,19 @@
     screen.id = 'boot';
     screen.setAttribute('role', 'status');
     box = el('div', { maxWidth: '380px' });
-    const logo = el('img', { width: '72px', height: '72px', marginBottom: '16px' });
+    const logo = el('img', { width: intro ? '96px' : '72px', height: intro ? '96px' : '72px', marginBottom: '16px' });
     logo.src = 'icon.png';
     logo.alt = '';
+    if (intro) {
+      const track = el('div', { width: '220px', height: '4px', margin: '20px auto 0', background: 'rgba(31,58,42,.15)', borderRadius: '2px', overflow: 'hidden' });
+      const bar = el('div', { height: '100%', width: '100%', background: '#357a4e', transformOrigin: 'left' });
+      bar.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: MIN_INTRO, easing: 'cubic-bezier(.32,.72,0,1)', fill: 'forwards' });
+      track.append(bar);
+      box.append(logo, el('div', { font: '700 34px/1.2 Inter, system-ui, sans-serif', letterSpacing: '-0.5px' }, 'DumpGuard'), el('div', { marginTop: '6px', color: '#5b6f60' }, 'Waste management for NJ-06 towns'), track);
+      screen.append(box);
+      doc.append(screen);
+      return;
+    }
     const spin = el('div', {
       width: '28px',
       height: '28px',
@@ -100,7 +119,12 @@
 
   const hide = () => {
     if (!screen || failed) return;
+    const wait = intro ? MIN_INTRO - (Date.now() - started) : 0;
+    if (wait > 0) return setTimeout(hide, wait);
     done = true;
+    try {
+      localStorage.setItem('dg-seen', '1');
+    } catch {}
     screen.style.opacity = '0';
     setTimeout(() => screen.remove(), 300);
   };
