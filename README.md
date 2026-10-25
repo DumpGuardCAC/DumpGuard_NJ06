@@ -19,3 +19,10 @@ DumpGuard solves this issue by acting as an AI-assisted ecosystem spanning a res
 
 At the curb or in basements with weak cellular reception, custom Service Worker caching strategies on the web and local SQLite databases on Android guarantee full offline access to static shell interfaces, structural assets, and saved calendars.
 
+## Website Features
+
+Live at **https://dumpguard.vercel.app/**. It shows an item database lookup (via search or photo upload), localized municipal pickup days tracking, public illegal dumping reporting interfaces, and an interactive tracking map. It also houses a secure Government portal complete with a dashboard for public works administrative logging, report triaging (New, Noticed, In progress, Resolved), and analytics. Street map tiles load dynamically with fallback points for missing connections, and photo uploads automatically scrub location metadata for public privacy.
+
+The item database is loaded into a client-side layout shell allowing immediate searches before external database synchronization completes. Materials without structural definitions or rules defaults display n/a.
+
+
