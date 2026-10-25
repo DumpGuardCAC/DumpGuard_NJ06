@@ -1,0 +1,8 @@
+{
+  "town": "metuchen",
+  "source": "https://metuchennj.org/resident/trash",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official Trash & Recycling page defines four zones by Main Street and the Pennsylvania Railroad (Amtrak Main Line on map) as NE/NW/SE/SW, with boundary text matching towns.json area_notes, plus Business District & All Non-Automated Areas on DPW calendars. Only a color-coded raster map is published (JPEG https://metuchennj.org/images/2024/07/recycling_map.jpeg and Fileman PDF recycling map.pdf under Newsfeed Files/Images/2024); PDF has no extractable street index. No ArcGIS FeatureServer/GeoJSON for Metuchen collection polygons found. RecycleCoach city record exists (project_id NJ_MID, district_id METUCHEN) but zone list/street endpoints do not publish a street index. 2026 DPW calendar PDFs schedule by zone name only. Checked: https://metuchennj.org/resident/trash, https://www.metuchennj.org/metnj/Trash/, https://metuchennj.org/departments/dpw, Jan-Mar/Apr-Jun/Jul-Sep/Oct-Dec 2026 calendar PDFs under public-works-calendars, Middlesex County recycling pages (Metuchen is municipal, not MCIA street list). Do not invent streets from the raster map."
+}

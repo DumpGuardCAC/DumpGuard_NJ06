@@ -1,0 +1,8 @@
+{
+  "town": "monmouth-beach",
+  "source": "https://www.monmouthbeach.org/government/departments/public-works/",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official Public Works page defines trash zones by Riverdale Avenue only: Zone 1 East side of Riverdale (garbage Mon/Thu; recycling Wed); Zone 2 West side of Riverdale (garbage Tue/Fri; recycling Wed). No alphabetical street index, collection map PDF, or ArcGIS FeatureServer/MapServer polygons found. areaKeys already encode those east/west boundaries. Also checked older Public Works Schedule PDF (monmouthbeach.org/wp-content/uploads/2016/05/Monmouth-Beach-Public-Works-Schedule.pdf; same east/west wording, outdated pickup days), recycle page, May/Fall 2026 newsletters (Recycle Coach link only), and site search; no secondary street-zone source."
+}

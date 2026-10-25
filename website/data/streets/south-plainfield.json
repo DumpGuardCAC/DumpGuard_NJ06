@@ -1,0 +1,8 @@
+{
+  "town": "south-plainfield",
+  "source": "https://www.southplainfieldnj.com/spnj/Departments/Departments/Recycling/Curbside",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Curbside page links Recycling Districts (pdf) to http://www.southplainfieldnj.com/spnj/_zumu_user_doc_cache/2018_Recycling_Schedule.pdf (Last-Modified 2017-12-21; titled NEW RECYCLING SCHEDULE FOR 2018). PDF is two scanned image pages with no extractable text: page 1 color map plus calendars; page 2 rules only. Map legend text states Thursday = North of RR tracks and Metuchen Rd (including Universal Avenue neighborhood); Friday = South of RR tracks and Metuchen Rd. No alphabetical street index. Do not invent streets or digitize polygons from the raster. Also checked: 2026 Curbside Recycling Schedule PNG (dates only); Recycling Curbside Sections.pdf URL returns HTML not a street PDF; RecycleCoach (address lookup, no published street dump); ags.civilsolutions.biz myiDV/SouthPlainfield MapServer (Municipal Limits, ROW, Block, Parcel, House Address - no recycling districts); myiDV/SouthPlainfield_Zone (Zoning from Mod4 only). areaKeys recycling:thursday-recycling-district and recycling:friday-recycling-district already encode the two districts."
+}

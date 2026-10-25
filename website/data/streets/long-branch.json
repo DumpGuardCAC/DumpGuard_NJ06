@@ -1,0 +1,8 @@
+{
+  "town": "long-branch",
+  "source": "https://www.longbranch.org/298/Recycling-Pickup",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official sources define north-a/b and south-a/b only by avenue corridors (Brighton Ave, Joline Ave, Broadway, Deal border, Monmouth Beach border), not by street lists or published zone polygons. Checked: https://www.longbranch.org/298/Recycling-Pickup (South Zone Mon north of Brighton / Tue south of Brighton; North Zone Thu north of Joline / Fri south of Joline to Broadway); https://www.longbranch.org/DocumentCenter/View/4683/2026-Calendar (image calendar; same A/B corridor legend as prior year DocumentCenter/View/3346); https://www.longbranch.org/DocumentCenter/View/1039/Long-Branch-Recycling-PDF (education deck, no streets); https://www.longbranch.org/291/Garbage-Pickup; https://www.longbranch.org/290/Divisions (garbage north/south of Broadway with Wall St. Section exception; no A/B street index); https://www.longbranch.org/287/Public-Works; https://longbranch.org/365/Garbage-Recycling; DocumentCenter/site search for street list and collection zone map (no street index or ArcGIS FeatureServer found). Do not invent street lists from corridors."
+}

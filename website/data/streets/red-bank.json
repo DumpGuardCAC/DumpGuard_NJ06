@@ -1,0 +1,8 @@
+{
+  "town": "red-bank",
+  "source": "https://www.redbanknj.org/208/Public-Utilities",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official Public Utilities page and 2025 DPU Bulletin (https://www.redbanknj.org/DocumentCenter/View/16100/2025-DPW-BULLETIN) define trash/bulk only as East of Broad Street (Mon/Thu; bulk 2nd Thursday) and West of Broad Street (Tue/Fri; bulk 3rd Friday). No alphabetical street index or trash-route map. Leaf/brush Zones 1-5 street lists (DocumentCenter/View/195 and Zone-2 PDF) are vegetative-waste zones, not trash east/west splits. Borough Street Map (DocumentCenter/View/11959) has no trash attribution. No Red Bank ArcGIS FeatureServer/MapServer trash polygons found (unrelated Trash_Recycle_Days service is Virginia SR 2284). areaKeys already encode the Broad Street boundary."
+}

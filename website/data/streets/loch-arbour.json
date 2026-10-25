@@ -1,0 +1,8 @@
+{
+  "town": "loch-arbour",
+  "source": "https://www.locharbour-nj.gov/",
+  "retrieved": "2026-10-25",
+  "type": "single",
+  "zones": {},
+  "notes": "Loch Arbour schedules have no area_key splits in towns.json; single village-wide schedule."
+}

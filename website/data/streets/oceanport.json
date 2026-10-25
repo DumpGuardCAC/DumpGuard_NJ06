@@ -1,0 +1,8 @@
+{
+  "town": "oceanport",
+  "source": "https://www.oceanportboro.com/resident/trash",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official Trash & Recycling and Public Works pages define Garbage District 1 (Mon/Thu) and District 2 (Tue/Fri) by name and days only; no alphabetical street index. Only geographic source is raster Map of Garbage Zones.jpg (https://www.oceanportboro.com/government/documents/department-documents/public-works/496-map-of-garbage-zones-jpg/file and /forms-documents/.../496-map-of-garbage-zones-jpg/file), which still shows three districts (Dist 1 Mon/Thu, Dist 2 Tue/Fri, Dist 3 Wed/Sat) and predates the June 1, 2025 cut to two districts (https://www.oceanportboro.com/government/news/915-trash-and-recycling-updates-beginning-july-1-2025: former Wed/Sat moved to Tue/Fri; others unchanged). Trash page Map of Garbage Districts accordion image src is empty/broken. No ArcGIS FeatureServer/MapServer/GeoJSON found. Also checked DPW documents (recycling zones JPG 497, leaf/recycling PDFs), departments/dpw, trash-recycling-calendar, 2025 solid-waste bid notice (specs via Colliers email only), Sept/Oct 2017 bulletin leaf street zones (not garbage districts). Do not invent streets from the raster map."
+}

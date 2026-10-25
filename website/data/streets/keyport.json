@@ -1,0 +1,8 @@
+{
+  "town": "keyport",
+  "source": "https://keyportonline.com/government/recycling/",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official recycling page defines Zones 1-4 by non-recyclable solid waste day (Mon/Tue/Thu/Fri) and biweekly Wednesday recycling for Zones 1-2 vs 3-4, but publishes no alphabetical street index. Geographic assignment is only a color-coded raster Solid Waste and Recycling Zone Map (Feb 2025 listing and Feb 2023 map inside the 2026 schedule PDF); no ArcGIS FeatureServer/MapServer or GeoJSON found. Checked: https://keyportonline.com/government/recycling/ ; https://keyportonline.com/wp-content/uploads/2026/04/2026_Recycling_Schedule_and_Map.pdf (p1 calendar, p2 raster map); https://keyportonline.com/pdf_listings/zone-map/ and https://keyportonline.com/wp-content/uploads/2026/07/Zone-Map.pdf ; https://keyportonline.com/government/public-works/ (SECTIONS MAP links same zone-map listing); https://keyportonline.com/wp-content/uploads/2026/04/2026_leaf.pdf (raster leaf/sweep schedule); http://www.KeyportRecycles.com (redirects to recycling page); ecode360 Ch. 16 sanitation (district language, no street list); Monmouth/ArcGIS open-data searches for Keyport waste/recycling zone layers (none). Do not invent streets from the raster map."
+}

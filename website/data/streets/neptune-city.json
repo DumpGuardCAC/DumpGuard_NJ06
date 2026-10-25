@@ -1,0 +1,8 @@
+{
+  "town": "neptune-city",
+  "source": "https://www.neptunecitynj.com/public-works/pages/garbage-collection-schedule-information",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official Garbage Collection Schedule page and 2026 Community Calendar (https://www.neptunecitynj.com/sites/g/files/vyhlif5316/f/uploads/2026_calendar.pdf) define Zone 1 as East of Union Ave to borough eastern border and Zone 2 as West of Union Ave to western border only; same Union Ave split for recycling zones. No alphabetical street index, collection-zone map PDF, or ArcGIS FeatureServer/MapServer trash/recycling polygons found. Also checked: Recycling page; Public Works hub; CivicPlus How Do I / Garbage and Calendar links; 2025 calendar PDF (same Union Ave wording); Civil Solutions myiDV/NeptuneBaseData_forArcGIS (municipal boundary, parcels, street centerlines, zoning - no collection zones; appears Neptune Township coverage). areaKeys already encode east/west of Union Ave. Do not invent streets from third-party street guides."
+}

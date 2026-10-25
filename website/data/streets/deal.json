@@ -1,0 +1,8 @@
+{
+  "town": "deal",
+  "source": "https://www.dealborough.com/",
+  "retrieved": "2026-10-25",
+  "type": "single",
+  "zones": {},
+  "notes": "Deal schedules have no area_key splits in towns.json; single borough-wide schedule."
+}

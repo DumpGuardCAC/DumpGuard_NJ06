@@ -1,0 +1,8 @@
+{
+  "town": "allenhurst",
+  "source": "https://www.allenhurstnj.org/",
+  "retrieved": "2026-10-25",
+  "type": "single",
+  "zones": {},
+  "notes": "Allenhurst schedules have no area_key splits in towns.json; single borough-wide schedule."
+}

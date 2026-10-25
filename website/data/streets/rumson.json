@@ -1,0 +1,8 @@
+{
+  "town": "rumson",
+  "source": "https://www.rumsonnj.gov/rumson-dpw",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official DPW page defines curbside by Bingham Avenue boundary only (east of Bingham vs Bingham Avenue and west) and drive-in as borough-wide; no alphabetical street index, collection map PDF, or ArcGIS FeatureServer/MapServer polygons for those zones. areaKeys already encode curbside (Bingham Avenue and west) vs drive-in (borough-wide). Also checked rumsonnj.gov recycling-information, engineering/tax maps (street index only, not collection zones), and holiday recycling notices; no secondary street-zone source."
+}

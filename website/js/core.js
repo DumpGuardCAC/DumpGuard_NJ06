@@ -13,7 +13,7 @@
       tooLong: 'Use 3 to 500 characters.',
       where: 'Where to take it', openNow: 'open now', closed: 'closed now', km: 'km', residents: 'Residents only',
       cat: 'Category', catPick: 'Pick a category', fail: 'Could not reach the server. Try again.',
-      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneNo: 'We can only match streets to a zone in Woodbridge so far. For this address, pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
+      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneNo: 'We could not match this address to a zone automatically. Pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
@@ -343,19 +343,109 @@
   };
 
   let hint = null;
-  const streetZones = async (town, road) => {
-    if (town !== 'woodbridge' || !road) return new Set();
-    try {
-      const r = await api.get(`/woodbridge/streets?q=${encodeURIComponent(road)}`);
-      return new Set((r.body?.matches || []).map(m => m.area_key));
-    } catch {
-      return new Set();
+  const streetCache = new Map();
+  const ABBREV = [
+    [/\b(avenue|ave)\b/g, 'ave'], [/\b(street|st)\b/g, 'st'], [/\b(road|rd)\b/g, 'rd'], [/\b(place|pl)\b/g, 'pl'],
+    [/\b(drive|dr)\b/g, 'dr'], [/\b(court|ct)\b/g, 'ct'], [/\b(lane|ln)\b/g, 'ln'], [/\b(terrace|ter)\b/g, 'ter'],
+    [/\b(boulevard|blvd)\b/g, 'blvd'], [/\b(parkway|pkwy)\b/g, 'pkwy'], [/\b(circle|cir)\b/g, 'cir'],
+  ];
+  const normStreet = s => {
+    let t = String(s || '').toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[.,']/g, '');
+    for (const [re, to] of ABBREV) t = t.replace(re, to);
+    return t.replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  };
+  const parseHouse = text => {
+    const m = String(text || '').trim().match(/^(\d+[a-z]?)\b/i);
+    return m ? parseInt(m[1], 10) : null;
+  };
+  const rangeAllows = (range, house) => {
+    if (house == null || !range) return true;
+    const r = range.toLowerCase().replace(/\s+/g, '');
+    if (r === 'odd') return house % 2 === 1;
+    if (r === 'even') return house % 2 === 0;
+    const m = r.match(/^(\d+)\s*[-–]\s*(\d+)/);
+    if (m) {
+      const a = +m[1];
+      const b = +m[2];
+      return house >= Math.min(a, b) && house <= Math.max(a, b);
     }
+    return true;
+  };
+  const pointInRing = (lng, lat, ring) => {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0];
+      const yi = ring[i][1];
+      const xj = ring[j][0];
+      const yj = ring[j][1];
+      if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  };
+  const pointInPolygon = (lng, lat, coords) => {
+    if (!pointInRing(lng, lat, coords[0])) return false;
+    return coords.slice(1).every(hole => !pointInRing(lng, lat, hole));
+  };
+  const pointInCoords = (lng, lat, coords, type) => {
+    if (type === 'Polygon') return pointInPolygon(lng, lat, coords);
+    if (type === 'MultiPolygon') return coords.some(poly => pointInPolygon(lng, lat, poly));
+    return false;
+  };
+  const pointInGeoJSON = (lng, lat, gj) => {
+    if (!gj || lng == null || lat == null) return false;
+    if (gj.type === 'FeatureCollection') return (gj.features || []).some(f => pointInGeoJSON(lng, lat, f));
+    if (gj.type === 'Feature') return pointInGeoJSON(lng, lat, gj.geometry);
+    if (gj.type === 'GeometryCollection') return (gj.geometries || []).some(g => pointInGeoJSON(lng, lat, g));
+    if (gj.coordinates) return pointInCoords(lng, lat, gj.coordinates, gj.type);
+    return false;
+  };
+  const loadTownStreets = async town => {
+    if (streetCache.has(town)) return streetCache.get(town);
+    const p = fetch(`/data/streets/${encodeURIComponent(town)}.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .catch(() => null);
+    streetCache.set(town, p);
+    return p;
+  };
+  const streetZones = async (town, road, house, lat, lng) => {
+    if (!town) return new Set();
+    const data = await loadTownStreets(town);
+    if (!data || data.type === 'unavailable' || data.type === 'single') return new Set();
+    const keys = new Set();
+    if (data.type === 'polygons' && lat != null && lng != null) {
+      for (const [key, z] of Object.entries(data.zones || {})) {
+        if (pointInGeoJSON(lng, lat, z.geojson)) keys.add(key);
+      }
+      return keys;
+    }
+    if (data.type === 'streets' && road) {
+      const n = normStreet(road);
+      if (!n) return keys;
+      for (const [key, z] of Object.entries(data.zones || {})) {
+        for (const raw of z.streets || []) {
+          const rn = normStreet(raw);
+          if (rn !== n && !rn.startsWith(n) && !n.startsWith(rn)) continue;
+          const range = String(raw).match(/\((.*)\)\s*$/)?.[1] ?? null;
+          if (!rangeAllows(range, house)) continue;
+          keys.add(key);
+        }
+      }
+      return keys;
+    }
+    if (town === 'woodbridge' && road) {
+      try {
+        const r = await api.get(`/woodbridge/streets?q=${encodeURIComponent(road)}`);
+        return new Set((r.body?.matches || []).map(m => m.area_key));
+      } catch {
+        return keys;
+      }
+    }
+    return keys;
   };
 
   const renderAreas = async (box, b, zip, chosen) => {
     const label = a => (spanish() ? a.label_es : a.label) || a.label;
-    const mineKeys = await streetZones(b.town.id, hint?.road);
+    const mineKeys = await streetZones(b.town.id, hint?.road, hint?.house, hint?.lat, hint?.lng);
     const auto = b.groups.map(g => b.areas.filter(x => x.group === g && mineKeys.has(x.key)));
     if (mineKeys.size && auto.every(l => l.length === 1)) {
       lookupZip(zip, b.town.id, auto.map(l => l[0].key));
@@ -431,7 +521,13 @@
         showText(box, 'err', t('addrNo'));
         return;
       }
-      hint = { road: hit.address.road || null };
+      const house = hit.address?.house_number ? parseInt(String(hit.address.house_number), 10) : parseHouse(text);
+      hint = {
+        road: hit.address?.road || null,
+        house: Number.isFinite(house) ? house : null,
+        lat: hit.lat != null ? +hit.lat : null,
+        lng: hit.lon != null ? +hit.lon : null,
+      };
       lookupZip(zip);
     } catch {
       showFail(box);

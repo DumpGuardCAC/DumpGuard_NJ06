@@ -1,0 +1,8 @@
+{
+  "town": "edison",
+  "source": "https://www.edisonnj.gov/Departments/DPW/Garbage-Recycling%202026%20Calendar%20for%20web.pdf",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Official 2026 Recycling & Sanitation Calendar defines garbage as municipal Mon/Tue/Thu/Fri districts vs private hauler (condos/townhouses/apartments) with no published street index; page 9 directs address lookup to Recycle Coach only. Recycling/leaf sections RS-1..RS-10 appear only as a raster Curbside Collection Map on calendar page 10 (image-only, no extractable streets or GeoJSON). Leaf/grass days are grouped by RS number (1&5 Mon, 7&8 Tue, 4&6 Wed, 2&9 Thu, 3&10 Fri) but without street lists. Checked: edisonnj.gov Public Works garbage_regulations, recycling_regulations, leaf_collection_regulations, recycle_coach_calendar_app; 2025 and 2024 calendar PDFs (same map-only RS approach); edisontwp ArcGIS Online (water utility layers only, no trash/recycling FeatureServer); Middlesex County mcgisportal MCIA recycling MapServers (Edison not included). Do not invent streets from the raster map."
+}
