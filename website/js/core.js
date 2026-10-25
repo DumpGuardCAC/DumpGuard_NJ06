@@ -13,7 +13,7 @@
       tooLong: 'Use 3 to 500 characters.',
       where: 'Where to take it', openNow: 'open now', closed: 'closed now', km: 'km', residents: 'Residents only',
       cat: 'Category', catPick: 'Pick a category', fail: 'Could not reach the server. Try again.',
-      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', choose: 'Choose...',
+      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
@@ -88,6 +88,7 @@
     const tw = state.towns.find(x => x.id === state.town);
     if (!$('zresult') || !tw?.zips?.length) return;
     $('zip').value = '';
+    hint = null;
     lookupZip(tw.zips[0], tw.id, []);
   };
   const rememberTown = id => {
@@ -116,7 +117,8 @@
     const q = $('q');
     if (q) q.placeholder = t('placeholder');
     const btn = $('zgo');
-    if (btn) btn.textContent = t('lookup');
+    if (btn) btn.textContent = t('addrGo');
+    if ($('zip')) $('zip').placeholder = t('addrPlaceholder');
     if ($('result')?.querySelector('.empty')) emptyState();
     fillCategories();
   };
@@ -340,25 +342,46 @@
     }
   };
 
-  const renderAreas = (box, b, zip, chosen) => {
+  let hint = null;
+  const streetZones = async (town, road) => {
+    if (town !== 'woodbridge' || !road) return new Set();
+    try {
+      const r = await api.get(`/woodbridge/streets?q=${encodeURIComponent(road)}`);
+      return new Set((r.body?.matches || []).map(m => m.area_key));
+    } catch {
+      return new Set();
+    }
+  };
+
+  const renderAreas = async (box, b, zip, chosen) => {
     box.appendChild(h('h3', {}, b.town.name));
-    box.appendChild(h('p', {}, t('pickArea')));
+    box.appendChild(h('p', {}, t('zoneIntro')));
+    const mineKeys = await streetZones(b.town.id, hint?.road);
+    if (mineKeys.size) box.appendChild(h('p', { class: 'sm' }, `${t('addrFound')}: ${hint.road}`));
     const picks = {};
     for (const k of chosen) picks[k.includes(':') ? k.split(':')[0] : 'area'] = k;
+    const label = a => (spanish() ? a.label_es : a.label) || a.label;
+    const choose = (g, key) => {
+      picks[g] = key;
+      if (b.groups.every(x => picks[x])) lookupZip(zip, b.town.id, b.groups.map(x => picks[x]));
+    };
+    const common = (b.overview || []).filter(r => !r.area);
+    for (const r of common) {
+      const nx = (r.next || []).map(o => fmt(o.date)).join('; ');
+      box.appendChild(h('div', { class: 'item' }, h('b', {}, streamName(r.stream)), nx && h('small', {}, `${t('next')}: ${nx}`)));
+    }
     for (const g of b.groups) {
-      const sel = h('select', { 'aria-label': streamName(g) }, h('option', { value: '' }, t('choose')));
-      if (b.groups.length > 1) box.appendChild(h('label', { class: 'pick-label' }, streamName(g)));
-      for (const a of b.areas.filter(x => x.group === g)) {
-        const label = (spanish() ? a.label_es : a.label) || a.label;
+      box.appendChild(h('h4', { class: 'zone-head' }, streamName(g)));
+      const list = b.areas.filter(x => x.group === g).sort((x, y) => (mineKeys.has(y.key) ? 1 : 0) - (mineKeys.has(x.key) ? 1 : 0));
+      for (const a of list) {
+        const rows = (b.overview || []).filter(r => r.area === a.key && (r.stream === g || b.groups.length === 1 || r.stream === 'trash' || r.stream === 'recycling'));
+        const dates = rows.flatMap(r => (r.next || []).slice(0, 1).map(o => `${streamName(r.stream)} ${fmt(o.date)}`));
         const desc = (spanish() ? a.description_es : a.description) || '';
-        sel.appendChild(h('option', { value: a.key }, desc ? `${label}: ${desc.length > 60 ? `${desc.slice(0, 57)}...` : desc}` : label));
+        const row = h('div', { class: `zone${mineKeys.has(a.key) ? ' hit' : ''}` },
+          h('div', {}, h('b', {}, label(a)), desc && h('small', {}, desc), dates.length && h('small', {}, `${t('next')}: ${dates.join('; ')}`), mineKeys.has(a.key) && h('small', { class: 'matchtag' }, t('matches'))),
+          h('button', { class: 'btn dark small', type: 'button', onclick: () => choose(g, a.key) }, t('mine')));
+        box.appendChild(row);
       }
-      sel.value = picks[g] || '';
-      sel.addEventListener('change', () => {
-        if (sel.value) picks[g] = sel.value; else delete picks[g];
-        if (b.groups.every(x => picks[x])) lookupZip(zip, b.town.id, b.groups.map(x => picks[x]));
-      });
-      box.appendChild(sel);
     }
   };
 
@@ -395,9 +418,32 @@
     } catch {}
   };
 
+  const findAddress = async text => {
+    if (!text) return;
+    if (/^\d{5}$/.test(text)) {
+      hint = null;
+      lookupZip(text);
+      return;
+    }
+    const box = clear($('zresult'));
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=us&limit=1&q=${encodeURIComponent(`${text}, NJ`)}`, { headers: { Accept: 'application/json' } });
+      const hit = (await res.json())[0];
+      const zip = hit?.address?.postcode?.slice(0, 5);
+      if (!zip) {
+        showText(box, 'err', t('addrNo'));
+        return;
+      }
+      hint = { road: hit.address.road || null };
+      lookupZip(zip);
+    } catch {
+      showFail(box);
+    }
+  };
+
   const wireSchedule = () => {
     if (!$('zgo')) return;
-    const search = () => lookupZip($('zip').value.trim());
+    const search = () => findAddress($('zip').value.trim());
     $('zgo').addEventListener('click', search);
     $('zip').addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
   };

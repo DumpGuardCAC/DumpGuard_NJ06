@@ -57,7 +57,14 @@ export async function handleSchedule(request, zip, repo, { today = todayIso(), n
     if (dup) return jsonSched({ error: 'one_area_per_group', group: dup, town, areas, groups }, 400);
     const missing = groups.filter((g) => !selected.some((a) => a.group === g));
     if (missing.length) {
-      return jsonSched({ needs: 'area', zip, town, areas, groups, missing }, wantIcs ? 409 : 200);
+      const until = addDays(today, 60);
+      const brief = (r) => ({
+        stream: r.stream,
+        area: r.area_key || null,
+        next: occurrences(r, today, until).slice(0, 2).map((o) => ({ date: o.date, moved: o.moved ?? false })),
+      });
+      const overview = all.filter((r) => r.stream === 'trash' || r.stream === 'recycling' || r.stream === 'garbage' || r.stream === 'bulk' || r.stream === 'yard').map(brief);
+      return jsonSched({ needs: 'area', zip, town, areas, groups, missing, overview }, wantIcs ? 409 : 200);
     }
     const keys = new Set(selected.map((a) => a.key));
     rows = all.filter((r) => !r.area_key || keys.has(r.area_key));

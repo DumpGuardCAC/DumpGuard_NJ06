@@ -264,3 +264,10 @@ html.cam-on,html.cam-on body{overflow:hidden}
 .cam-use{min-height:56px;font-size:1.05rem;background:#fff;color:var(--slate);border-color:#fff}
 .cam-use:disabled{opacity:.45}
 .cam-use:active,.cam-close:active{scale:.96}
+
+.zone-head{margin:18px 0 8px;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.zone{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(31,58,42,.12)}
+.zone small{display:block;color:var(--muted);line-height:1.4}
+.zone .btn{flex:none;padding:10px 16px}
+.zone.hit{background:#e9f4dd;margin:0 -12px;padding:12px}
+.matchtag{color:var(--green)!important;font-weight:600}

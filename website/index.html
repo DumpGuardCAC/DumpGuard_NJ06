@@ -75,8 +75,9 @@
     <h2>Pickup days</h2>
     <div class="tool">
         <div>
-            <label for="zip">ZIP code (optional)</label>
-            <div class="row2"><input id="zip" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="08817"><button class="btn dark" id="zgo" type="button">Look up</button></div>
+            <label for="zip">Your address (optional)</label>
+            <div class="row2"><input id="zip" autocomplete="street-address" placeholder="123 Main St, Edison"><button class="btn dark" id="zgo" type="button">Find my zone</button></div>
+            <p class="sm">Your address is sent to OpenStreetMap to find your ZIP code. It is not saved.</p>
         </div>
         <div class="card" id="zresult" aria-live="polite"></div>
     </div>
