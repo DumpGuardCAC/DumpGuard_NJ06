@@ -42,6 +42,7 @@
     "pickTown": "¿Qué municipio?",
     "pickArea": "¿Cuál es el suyo?",
     "approxNote": "Zona obtenida del mapa del municipio. Cerca del borde de una zona, confirme con el municipio.",
+    "zonePending": "Los datos actualizados no estan publicados en la web (en progreso).",
     "zoneNo": "No pudimos asignar esta dirección a una zona automáticamente. Elija su zona abajo.",
     "zoneList": "Elegir mi zona",
     "zoneIntro": "Días de recolección de cada zona de su ciudad. Toque la suya o escriba su dirección para encontrarla.",

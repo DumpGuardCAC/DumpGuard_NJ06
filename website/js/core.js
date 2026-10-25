@@ -13,7 +13,7 @@
       tooLong: 'Use 3 to 500 characters.',
       where: 'Where to take it', openNow: 'open now', closed: 'closed now', km: 'km', residents: 'Residents only',
       cat: 'Category', catPick: 'Pick a category', fail: 'Could not reach the server. Try again.',
-      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', approxNote: 'Zone found from the township map. Near a zone border, confirm with the township.', zoneNo: 'We could not match this address to a zone automatically. Pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
+      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', approxNote: 'Zone found from the township map. Near a zone border, confirm with the township.', zonePending: "Updated data isn't published on the web (in progress).", zoneNo: 'We could not match this address to a zone automatically. Pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
@@ -493,6 +493,8 @@
     }
     box.appendChild(h('h3', {}, b.town.name));
     box.appendChild(h('p', {}, t('zoneNo')));
+    const sd = await loadTownStreets(b.town.id);
+    if (!sd || sd.type === 'unavailable') box.appendChild(h('p', { class: 'sm' }, t('zonePending')));
     const picks = {};
     for (const k of chosen) picks[k.includes(':') ? k.split(':')[0] : 'area'] = k;
     const choose = (g, key) => {
