@@ -198,7 +198,7 @@ html.gated #tabs{display:none!important}
   #tabs{left:20px;right:20px;bottom:calc(14px + env(safe-area-inset-bottom,0px));padding:4px;gap:2px;border:0;border-radius:36px;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(30px) saturate(200%) brightness(1.04);backdrop-filter:blur(30px) saturate(200%) brightness(1.04);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 1px 1px 0 -.5px rgba(255,255,255,.95),inset -1px -1px 0 -.5px rgba(255,255,255,.7),inset 0 -8px 14px -8px rgba(255,255,255,.35),0 8px 28px -6px rgba(0,0,0,.22),0 1px 3px rgba(0,0,0,.08)}
   #tabs a{min-height:58px;border-radius:32px;color:#3b4a40;font-size:.66rem;font-weight:600;gap:3px;transition:scale .4s var(--spring),background-color .3s,color .25s,box-shadow .3s}
   #tabs svg{width:26px;height:26px;stroke-width:1.7}
-  #tabs a.act{color:var(--green);background:rgba(120,130,125,.2);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5),inset 0 1px 1px rgba(255,255,255,.55)}
+  #tabs a.act{color:var(--green);background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(8px) saturate(160%);backdrop-filter:blur(8px) saturate(160%);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),inset 1px 1px 1px -.5px #fff,inset -1px -1px 1px -.5px rgba(255,255,255,.8),0 3px 10px -4px rgba(0,0,0,.25),0 0 0 .5px rgba(0,0,0,.05)}
   #tabs a.act svg{animation:pop .5s var(--spring)}
   #tabs a:active{scale:1.08}
   .does a,.card,.li,.drop,.gate-warn{background:#fff;border:1px solid rgba(31,58,42,.12);box-shadow:none}
@@ -248,7 +248,7 @@ html.cam-on,html.cam-on body{overflow:hidden}
 @keyframes camIn{from{opacity:0}to{opacity:1}}
 .cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center}
 .cam{touch-action:none}
-.cam-box{position:absolute;left:0;top:0;width:0;height:0;border:2px solid #fff;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.35);pointer-events:none;transition:transform .3s var(--spring),width .3s var(--spring),height .3s var(--spring),opacity .2s}
+.cam-box{position:absolute;left:0;top:0;width:0;height:0;border:2px solid #fff;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.35);pointer-events:none;transition:transform .2s var(--spring),width .2s var(--spring),height .2s var(--spring),opacity .2s}
 .cam-box.idle{opacity:.35}
 .cam-box span{position:absolute;left:6px;bottom:6px;max-width:calc(100% - 12px);padding:3px 9px;border-radius:4px;background:rgba(0,0,0,.65);color:#fff;font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cam-box.idle span{display:none}

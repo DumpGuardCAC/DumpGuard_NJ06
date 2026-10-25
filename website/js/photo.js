@@ -8,6 +8,7 @@
   const MAX_ZOOM = 4;
   const ZOOM_STEPS = [1, 2, 3];
   const TEMPERATURE = 1.4;
+  const TICK_MS = 200;
   const THRESHOLD = 0.55;
   const HAZARD_THRESHOLD = 0.75;
 
@@ -90,7 +91,7 @@
     return calibrate(Array.from(data), TEMPERATURE);
   };
 
-  const drawBox = (source, b) => frameCtx.drawImage(source, b.x, b.y, b.s, b.s, 0, 0, SIZE, SIZE);
+  const drawBox = (source, b) => frameCtx.drawImage(source, b.x, b.y, b.w, b.h, 0, 0, SIZE, SIZE);
 
   const scoreBoxes = async (source, boxes) => {
     const model = await loadModel();
@@ -110,10 +111,32 @@
   const objectScore = p => Math.max(...p.filter((_, i) => CLASSES[i] !== 'no_object'));
 
   const overlap = (a, b) => {
-    const w = Math.min(a.x + a.s, b.x + b.s) - Math.max(a.x, b.x);
-    const d = Math.min(a.y + a.s, b.y + b.s) - Math.max(a.y, b.y);
+    const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+    const d = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
     if (w <= 0 || d <= 0) return 0;
-    return (w * d) / (a.s * a.s + b.s * b.s - w * d);
+    return (w * d) / (a.w * a.h + b.w * b.h - w * d);
+  };
+
+  const RECTS = [[1, 0.75], [0.75, 1], [0.85, 0.55], [0.55, 0.85], [0.7, 0.7], [1, 0.5]];
+  const refinements = sq => {
+    const out = [];
+    for (const [fw, fh] of RECTS) {
+      const w = sq.w * fw;
+      const h = sq.h * fh;
+      const nx = sq.w - w > sq.w * 0.2 ? 3 : 1;
+      const ny = sq.h - h > sq.h * 0.2 ? 3 : 1;
+      for (let i = 0; i < nx; i++) {
+        for (let j = 0; j < ny; j++) {
+          out.push({
+            x: sq.x + (nx === 1 ? (sq.w - w) / 2 : ((sq.w - w) * i) / (nx - 1)),
+            y: sq.y + (ny === 1 ? (sq.h - h) / 2 : ((sq.h - h) * j) / (ny - 1)),
+            w,
+            h,
+          });
+        }
+      }
+    }
+    return out;
   };
 
   const init = () => {
@@ -200,6 +223,7 @@
       let smooth = null;
       let last = null;
       let lastBox = null;
+      let square = null;
 
       const geometry = () => {
         const vw = video.videoWidth;
@@ -211,7 +235,8 @@
       const placeBox = () => {
         if (!lastBox || !video.videoWidth) return;
         const { vw, vh, cw, ch, k } = geometry();
-        boxEl.style.width = boxEl.style.height = `${lastBox.s * k}px`;
+        boxEl.style.width = `${lastBox.w * k}px`;
+        boxEl.style.height = `${lastBox.h * k}px`;
         boxEl.style.transform = `translate(${cw / 2 + (lastBox.x - vw / 2) * k}px, ${ch / 2 + (lastBox.y - vh / 2) * k}px)`;
       };
       const setZoom = (z, eased) => {
@@ -240,6 +265,8 @@
                 x: vw / 2 - aw / 2 + (nx === 1 ? (aw - s) / 2 : ((aw - s) * i) / (nx - 1)),
                 y: vh / 2 - ah / 2 + (ny === 1 ? (ah - s) / 2 : ((ah - s) * j) / (ny - 1)),
                 s,
+                w: s,
+                h: s,
               });
             }
           }
@@ -286,7 +313,7 @@
       };
       const accept = cls => {
         const r = last;
-        if (lastBox) drawBox(video, lastBox);
+        if (square) drawBox(video, square);
         DG.clear(label).appendChild(h('img', { src: frame.toDataURL('image/jpeg', 0.85), alt: '' }));
         stop();
         note.textContent = `${str('sure')}: ${DG.material(cls)} (${pct(r.top.find(c => c.cls === cls).p)}). ${str('local')}`;
@@ -306,7 +333,8 @@
 
       const tick = async () => {
         if (!alive) return;
-        let delay = 120;
+        const started = performance.now();
+        let delay = 0;
         try {
           if (video.videoWidth && overlay.clientWidth) {
             const boxes = candidates();
@@ -316,9 +344,23 @@
             const best = Math.max(...scores);
             const near = scores.map((_, i) => i).filter(i => scores[i] >= best - 0.08);
             const pick = near.sort((a, b) => boxes[a].s - boxes[b].s || scores[b] - scores[a])[0];
-            const box = boxes[pick];
+            let box = boxes[pick];
+            let chosen = probs[pick];
+            let top = scores[pick];
+            const tight = refinements(box);
+            const tightProbs = await scoreBoxes(video, tight);
+            if (!alive) return;
+            tight.forEach((t, i) => {
+              const sc = objectScore(tightProbs[i]);
+              if (sc >= top - 0.06 && t.w * t.h < box.w * box.h) {
+                box = t;
+                chosen = tightProbs[i];
+                top = Math.max(top, sc);
+              }
+            });
+            square = boxes[pick];
             const jumped = !lastBox || overlap(lastBox, box) < 0.4;
-            smooth = smooth && !jumped ? smooth.map((v, i) => 0.6 * v + 0.4 * probs[pick][i]) : probs[pick];
+            smooth = smooth && !jumped ? smooth.map((v, i) => 0.6 * v + 0.4 * chosen[i]) : chosen;
             lastBox = box;
             last = summarize(smooth);
             const idle = last.cls === 'no_object' || best < 0.35;
@@ -338,7 +380,7 @@
           live.textContent = str('fail');
           delay = 2000;
         }
-        if (alive) setTimeout(tick, delay);
+        if (alive) setTimeout(tick, Math.max(delay, TICK_MS - (performance.now() - started)));
       };
       tick();
     };
