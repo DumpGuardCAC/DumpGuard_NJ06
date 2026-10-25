@@ -5,13 +5,27 @@
 
   const ALIAS = { about: 'home', login: 'gov', signup: 'home', forgot: 'home', dash: 'home' };
 
+  const ORDER = ['home', 'identify', 'pickup', 'report', 'map', 'gov'];
+  const root = document.documentElement;
+  const tabs = $('tabs');
+  let current = null;
+  let frame = 0;
+
+  const edge = () => {
+    frame = 0;
+    root.style.setProperty('--sp', Math.min(1, window.scrollY / 60).toFixed(3));
+  };
+
   const go = name => {
     const view = ALIAS[name] || name;
     const target = $(`v-${view}`) ? view : 'home';
+    root.dataset.dir = current && ORDER.indexOf(target) < ORDER.indexOf(current) ? 'b' : 'f';
+    current = target;
     document.querySelectorAll('.view').forEach(e => e.classList.toggle('on', e.id === `v-${target}`));
     document.querySelectorAll('nav a, #tabs a').forEach(a => a.classList.toggle('act', a.getAttribute('data-go') === target));
     try { history.replaceState(null, '', `#${target}`); } catch {}
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    edge();
     const heading = $(`v-${target}`)?.querySelector('h1, h2');
     if (heading) {
       heading.setAttribute('tabindex', '-1');
@@ -30,7 +44,12 @@
     e.preventDefault();
     go(link.getAttribute('data-go'));
   });
-  window.addEventListener('scroll', navStyle);
+  window.addEventListener('scroll', () => {
+    navStyle();
+    if (!frame) frame = requestAnimationFrame(edge);
+  }, { passive: true });
+  tabs.addEventListener('pointerdown', () => tabs.classList.add('press'));
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(type => tabs.addEventListener(type, () => tabs.classList.remove('press')));
 
   const govLogin = async () => {
     const err = $('lerr');
