@@ -1,0 +1,8 @@
+{
+  "town": "keyport",
+  "source": "https://keyportonline.com/wp-content/uploads/2026/07/Zone-Map.pdf",
+  "retrieved": "2026-10-25",
+  "type": "unavailable",
+  "zones": {},
+  "notes": "Solid waste zones 1-4 are green outlines on the February 2023 zone map (Monday, Tuesday, Thursday, Friday), also on page 2 of the 2026 schedule; recycling is zones 1-2 versus 3-4. The outline could not be registered to the borough boundary: best similarity IoU was 0.69 (map rotated about 90 degrees; north arrow points left) and affine refinement fell to 0.65, so no zone polygons were written."
+}
