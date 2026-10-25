@@ -17,8 +17,8 @@
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
-      materials: { rigid_plastic: 'Hard plastic', soft_plastic_foam: 'Soft plastic or foam', cardboard_paper: 'Cardboard or paper', metal: 'Metal', glass: 'Glass', ewaste_hazard: 'Electronics or hazardous', other: 'Other' },
-      consensus: 'In your town most of these are:', basedOn: 'based on', items: 'verified items',
+      materials: { plastic: 'Plastic', cartridges: 'Printer cartridges', rigid_plastic: 'Hard plastic', soft_plastic_foam: 'Soft plastic or foam', cardboard_paper: 'Cardboard or paper', metal: 'Metal', glass: 'Glass', ewaste_hazard: 'Electronics or hazardous', other: 'Other' },
+      plasticNote: 'Plastics marked #1 and #2 are recyclable. All other plastics (#3 to #7) are not.', consensus: 'In your town most of these are:', basedOn: 'based on', items: 'verified items',
     },
   };
   const COLORS = { recycling: '#15803d', trash: '#4b5563', special_dropoff: '#dc2626' };
@@ -247,7 +247,7 @@
     } catch {}
   };
 
-  const MATERIAL_ORDER = ['rigid_plastic', 'soft_plastic_foam', 'cardboard_paper', 'metal', 'glass', 'ewaste_hazard'];
+  const MATERIAL_ORDER = ['plastic', 'cardboard_paper', 'metal', 'glass', 'ewaste_hazard', 'cartridges'];
   const fillCategories = () => {
     const cat = $('cat');
     if (!cat) return;
@@ -260,7 +260,6 @@
   };
   const showMaterial = async cls => {
     if (cls === 'no_object' || !cls) return;
-    showCategoryPicker(true);
     if ($('cat')) $('cat').value = cls;
     const mine = ++seq;
     try {
@@ -273,12 +272,13 @@
       }
       const b = r.body;
       box.appendChild(h('h3', {}, t('materials')[cls] || cls));
+      if (cls === 'plastic') box.appendChild(h('p', { class: 'sm' }, t('plasticNote')));
       if (b.consensus) {
         box.appendChild(h('span', { class: 'tag', style: paint(COLORS[b.consensus.rule]) }, t(b.consensus.rule)));
         box.appendChild(h('p', { class: 'sm' }, `${t('consensus')} (${t('basedOn')} ${b.consensus.based_on} ${t('items')})`));
       }
       for (const it of b.items.slice(0, 8)) {
-        box.appendChild(resultRow(it, () => renderResults([{ id: it.id, name: it.name, material: cls, hazard: it.hazard, resolved: it.resolved }])));
+        box.appendChild(resultRow(it, () => renderResults([{ id: it.id, name: it.name, material: it.material, hazard: it.hazard, resolved: it.resolved }])));
       }
     } catch {
       if (mine === seq) showFail($('result'));

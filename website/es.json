@@ -53,7 +53,10 @@
     "alerts": "Avisos",
     "counted": "artículos clasificados con DumpGuard, unas",
     "lb": "libras desviadas (estimado)",
+    "plasticNote": "Los plásticos marcados con #1 y #2 se reciclan. Los demás (#3 a #7) no.",
     "materials": {
+      "plastic": "Plástico",
+      "cartridges": "Cartuchos de impresora",
       "rigid_plastic": "Plástico duro",
       "soft_plastic_foam": "Plástico blando o espuma",
       "cardboard_paper": "Cartón o papel",
@@ -67,14 +70,18 @@
     "items": "artículos verificados"
   },
   "photo": {
-    "take": "Tomar una foto",
+    "scan": "Escanear con la cámara",
     "upload": "O suba una foto",
     "looking": "Mirando la foto...",
     "sure": "Parece",
-    "unsure": "No estoy seguro de qué es. Elija una categoría abajo.",
-    "none": "No se encontró ningún objeto. Acérquese más o elija una categoría abajo.",
+    "unsure": "No estoy seguro. Toque la opción más cercana.",
+    "none": "No se encontró ningún objeto. Acérquese más.",
     "fail": "No se pudo iniciar el reconocimiento de fotos. Elija una categoría abajo.",
-    "local": "La foto se queda en su dispositivo."
+    "local": "La foto se queda en su dispositivo.",
+    "use": "Usar esta",
+    "close": "Cerrar",
+    "hint": "Apunte a un solo objeto",
+    "camFail": "La cámara no está disponible. Permita el acceso a la cámara o suba una foto."
   },
   "labels": {
     "Home": "Inicio",

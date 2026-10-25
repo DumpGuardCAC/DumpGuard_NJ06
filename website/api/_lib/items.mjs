@@ -98,6 +98,14 @@ export async function handleItem(request, id, repo) {
 }
 
 export const MATERIALS = ['rigid_plastic', 'soft_plastic_foam', 'cardboard_paper', 'metal', 'glass', 'ewaste_hazard', 'other'];
+const CARTRIDGE_IDS = new Set(['ink-cartridge', 'toner-cartridge']);
+const PLASTICS = new Set(['rigid_plastic', 'soft_plastic_foam']);
+const GROUPS = {
+  plastic: (it) => PLASTICS.has(it.material),
+  cartridges: (it) => CARTRIDGE_IDS.has(it.id),
+};
+const inGroup = (it, material) =>
+  GROUPS[material] ? GROUPS[material](it) : it.material === material && !CARTRIDGE_IDS.has(it.id);
 const MIN_ITEMS_FOR_CONSENSUS = 5;
 const CONSENSUS_SHARE = 0.85;
 
@@ -116,10 +124,10 @@ function summarize(items, chain, byKey) {
 }
 
 export async function handleMaterial(request, material, repo, { limit = 40 } = {}) {
-  if (!MATERIALS.includes(material)) {
+  if (!MATERIALS.includes(material) && !GROUPS[material]) {
     return material === 'no_object'
       ? notFound('no_object', { message: { en: 'No item found. Point the camera at one item.', es: ES.noObject } })
-      : badRequest('invalid_material', { allowed: MATERIALS });
+      : badRequest('invalid_material', { allowed: [...MATERIALS, ...Object.keys(GROUPS)] });
   }
   const town = new URL(request.url).searchParams.get('town');
   if (town !== null && !validId(town)) return badRequest('invalid_region');
@@ -128,7 +136,7 @@ export async function handleMaterial(request, material, repo, { limit = 40 } = {
 
   const { items, facilities } = await repo.itemsBundle();
   const byKey = Object.fromEntries(facilities.map((f) => [f.key, f]));
-  const inClass = items.filter((i) => i.material === material);
+  const inClass = items.filter((i) => inGroup(i, material));
   const { rows, counts, consensus, verified } = summarize(inClass, chain, byKey);
   return jsonWithEtag(request, {
     material,
@@ -139,7 +147,7 @@ export async function handleMaterial(request, material, repo, { limit = 40 } = {
     consensus,
     hazard: inClass.some((i) => i.hazard),
     items: rows.slice(0, limit).map(({ it, r }) => ({
-      id: it.id, name: it.name, hazard: it.hazard, prep: it.prep, resolved: r,
+      id: it.id, name: it.name, material: it.material, hazard: it.hazard, prep: it.prep, resolved: r,
     })),
   });
 }
