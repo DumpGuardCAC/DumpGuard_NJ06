@@ -13,7 +13,7 @@
       tooLong: 'Use 3 to 500 characters.',
       where: 'Where to take it', openNow: 'open now', closed: 'closed now', km: 'km', residents: 'Residents only',
       cat: 'Category', catPick: 'Pick a category', fail: 'Could not reach the server. Try again.',
-      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
+      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneNo: 'We can only match streets to a zone in Woodbridge so far. For this address, pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
@@ -354,35 +354,32 @@
   };
 
   const renderAreas = async (box, b, zip, chosen) => {
-    box.appendChild(h('h3', {}, b.town.name));
-    box.appendChild(h('p', {}, t('zoneIntro')));
+    const label = a => (spanish() ? a.label_es : a.label) || a.label;
     const mineKeys = await streetZones(b.town.id, hint?.road);
-    if (mineKeys.size) box.appendChild(h('p', { class: 'sm' }, `${t('addrFound')}: ${hint.road}`));
+    const auto = b.groups.map(g => b.areas.filter(x => x.group === g && mineKeys.has(x.key)));
+    if (mineKeys.size && auto.every(l => l.length === 1)) {
+      lookupZip(zip, b.town.id, auto.map(l => l[0].key));
+      return;
+    }
+    box.appendChild(h('h3', {}, b.town.name));
+    box.appendChild(h('p', {}, t('zoneNo')));
     const picks = {};
     for (const k of chosen) picks[k.includes(':') ? k.split(':')[0] : 'area'] = k;
-    const label = a => (spanish() ? a.label_es : a.label) || a.label;
     const choose = (g, key) => {
       picks[g] = key;
       if (b.groups.every(x => picks[x])) lookupZip(zip, b.town.id, b.groups.map(x => picks[x]));
     };
-    const common = (b.overview || []).filter(r => !r.area);
-    for (const r of common) {
-      const nx = (r.next || []).map(o => fmt(o.date)).join('; ');
-      box.appendChild(h('div', { class: 'item' }, h('b', {}, streamName(r.stream)), nx && h('small', {}, `${t('next')}: ${nx}`)));
-    }
+    const more = h('details', { class: 'zone-more' }, h('summary', {}, t('zoneList')));
     for (const g of b.groups) {
-      box.appendChild(h('h4', { class: 'zone-head' }, streamName(g)));
-      const list = b.areas.filter(x => x.group === g).sort((x, y) => (mineKeys.has(y.key) ? 1 : 0) - (mineKeys.has(x.key) ? 1 : 0));
-      for (const a of list) {
-        const rows = (b.overview || []).filter(r => r.area === a.key && (r.stream === g || b.groups.length === 1 || r.stream === 'trash' || r.stream === 'recycling'));
-        const dates = rows.flatMap(r => (r.next || []).slice(0, 1).map(o => `${streamName(r.stream)} ${fmt(o.date)}`));
+      more.appendChild(h('h4', { class: 'zone-head' }, streamName(g)));
+      for (const a of b.areas.filter(x => x.group === g)) {
         const desc = (spanish() ? a.description_es : a.description) || '';
-        const row = h('div', { class: `zone${mineKeys.has(a.key) ? ' hit' : ''}` },
-          h('div', {}, h('b', {}, label(a)), desc && h('small', {}, desc), dates.length && h('small', {}, `${t('next')}: ${dates.join('; ')}`), mineKeys.has(a.key) && h('small', { class: 'matchtag' }, t('matches'))),
-          h('button', { class: 'btn dark small', type: 'button', onclick: () => choose(g, a.key) }, t('mine')));
-        box.appendChild(row);
+        more.appendChild(h('div', { class: 'zone' },
+          h('div', {}, h('b', {}, label(a)), desc ? h('small', {}, desc) : null),
+          h('button', { class: 'btn dark small', type: 'button', onclick: () => choose(g, a.key) }, t('mine'))));
       }
     }
+    box.appendChild(more);
   };
 
   const renderSchedule = (box, b, areas, mine) => {

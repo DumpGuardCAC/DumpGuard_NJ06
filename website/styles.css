@@ -271,3 +271,5 @@ html.cam-on,html.cam-on body{overflow:hidden}
 .zone .btn{flex:none;padding:10px 16px}
 .zone.hit{background:#e9f4dd;margin:0 -12px;padding:12px}
 .matchtag{color:var(--green)!important;font-weight:600}
+
+.zone-more{margin-top:12px}.zone-more summary{cursor:pointer;font-weight:600;color:var(--green);padding:10px 0}

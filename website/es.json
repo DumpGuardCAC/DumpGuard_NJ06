@@ -36,6 +36,8 @@
     "zipHelp": "Escriba su código postal para ver los días de recogida.",
     "pickTown": "¿Qué municipio?",
     "pickArea": "¿Cuál es el suyo?",
+    "zoneNo": "Por ahora solo podemos asignar calles a una zona en Woodbridge. Para esta dirección, elija su zona abajo.",
+    "zoneList": "Elegir mi zona",
     "zoneIntro": "Días de recolección de cada zona de su ciudad. Toque la suya o escriba su dirección para encontrarla.",
     "mine": "Es la mía",
     "matches": "Coincide con su calle",
