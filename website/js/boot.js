@@ -148,7 +148,7 @@
     showError('Something went wrong', String((r && (r.stack || r.message)) || r));
   });
 
-  window.addEventListener('load', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       if (failed) return;
       if (doc.classList.contains('gated') || document.querySelector('.view.on')) return hide();
@@ -163,4 +163,9 @@
     row.append(button('Reload', () => location.reload(), true), button('Clear saved data and reload', resetAndReload, false));
     box.append(row);
   }, 12000);
+
+  const fonts = document.createElement('link');
+  fonts.rel = 'stylesheet';
+  fonts.href = 'https://fonts.googleapis.com/css2?family=Belleza&family=Inter:wght@300;400;600&display=swap';
+  document.head.append(fonts);
 })();

@@ -1,7 +1,7 @@
-const CACHE = 'dumpguard-v20';
+const CACHE = 'dumpguard-v21';
 const SHELL = [
   '/', '/index.html', '/styles.css', '/manifest.json', '/es.json', '/icon.png',
-  '/js/boot.js', '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js',
+  '/js/boot.js', '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js', '/lib/leaflet.js',
 ];
 
 const offline = () => new Response('DumpGuard is offline. Reconnect and reload.', { status: 503, headers: { 'Content-Type': 'text/plain' } });
@@ -35,14 +35,15 @@ self.addEventListener('fetch', e => {
 
   if (req.mode === 'navigate') {
     e.respondWith((async () => {
-      try {
-        const res = await fetch(req);
+      const cache = await caches.open(CACHE);
+      const cached = await cache.match('/index.html');
+      const network = fetch(req).then(res => {
         remember('/index.html', res.clone()).catch(() => {});
         return res;
-      } catch {
-        const cache = await caches.open(CACHE);
-        return (await cache.match('/index.html')) || offline();
-      }
+      });
+      if (!cached) return network.catch(offline);
+      const slow = new Promise(resolve => setTimeout(() => resolve(cached), 3000));
+      return Promise.race([network, slow]).catch(() => cached);
     })());
     return;
   }
