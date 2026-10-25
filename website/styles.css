@@ -195,11 +195,12 @@ html.gated #tabs{display:none!important}
 @media(max-width:700px){
   body{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
   nav{background:#fff;box-shadow:0 .5px 0 rgba(0,0,0,.2)}
-  #tabs{left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px;border:.5px solid rgba(255,255,255,.7);border-radius:32px;background:rgba(255,255,255,.4);-webkit-backdrop-filter:blur(22px) saturate(190%);backdrop-filter:blur(22px) saturate(190%);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.4),0 10px 30px -10px rgba(0,0,0,.3)}
-  #tabs a{min-height:54px;border-radius:26px;color:#46544a}
-  #tabs a.act{color:var(--green);background:rgba(255,255,255,.6);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),0 2px 8px -3px rgba(0,0,0,.22)}
+  #tabs{left:20px;right:20px;bottom:calc(14px + env(safe-area-inset-bottom,0px));padding:4px;gap:2px;border:0;border-radius:36px;background:rgba(255,255,255,.22);-webkit-backdrop-filter:blur(30px) saturate(200%) brightness(1.04);backdrop-filter:blur(30px) saturate(200%) brightness(1.04);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),inset 1px 1px 0 -.5px rgba(255,255,255,.95),inset -1px -1px 0 -.5px rgba(255,255,255,.7),inset 0 -8px 14px -8px rgba(255,255,255,.35),0 8px 28px -6px rgba(0,0,0,.22),0 1px 3px rgba(0,0,0,.08)}
+  #tabs a{min-height:58px;border-radius:32px;color:#3b4a40;font-size:.66rem;font-weight:600;gap:3px;transition:scale .4s var(--spring),background-color .3s,color .25s,box-shadow .3s}
+  #tabs svg{width:26px;height:26px;stroke-width:1.7}
+  #tabs a.act{color:var(--green);background:rgba(120,130,125,.2);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.5),inset 0 1px 1px rgba(255,255,255,.55)}
   #tabs a.act svg{animation:pop .5s var(--spring)}
-  #tabs a:active{scale:.92}
+  #tabs a:active{scale:1.08}
   .does a,.card,.li,.drop,.gate-warn{background:#fff;border:1px solid rgba(31,58,42,.12);box-shadow:none}
 }
 
