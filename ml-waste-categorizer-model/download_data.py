@@ -74,7 +74,7 @@ def download(job):
         return
     os.makedirs(os.path.dirname(path), exist_ok=True)
     try:
-        r = requests.get(f"https://open-images-dataset.s3.amazonaws.com/test/{image_id}.jpg", timeout=30)
+        r = requests.get(f"http://open-images-dataset.s3.amazonaws.com/test/{image_id}.jpg", timeout=30)
         if r.status_code == 200:
             open(path, "wb").write(r.content)
     except Exception:

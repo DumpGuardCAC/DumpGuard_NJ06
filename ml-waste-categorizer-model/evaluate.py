@@ -21,7 +21,7 @@ def build():
 
 def predict(model, split):
     d = T.df[T.df.split == split]
-    dl = T.DataLoader(T.DS(d, False), batch_size=128, shuffle=False, num_workers=6)
+    dl = T.DataLoader(T.DS(d, False), batch_size=128, shuffle=False, num_workers=int(os.environ.get("DG_WORKERS", 16)))
     P = np.concatenate([model.predict_on_batch(b[0].numpy()) for b in dl])
     return np.asarray(P, dtype=np.float64), np.array([T.C2I[c] for c in d.cls])
 
@@ -66,6 +66,8 @@ def main():
                     ax.text(j, i, cm[i, j], ha="center", va="center", color="white" if cmn[i, j] > .5 else "black", fontsize=8)
         ax.set_xlabel("predicted"); ax.set_ylabel("true"); ax.set_title(f"{split} (acc {acc:.3f})")
         fig.tight_layout(); fig.savefig(f"{RUN}/cm_{split}.png", dpi=130); plt.close(fig)
+        srcs = T.df[T.df.split == split].source.values
+        res[split]["by_source"] = {s: dict(n=int((srcs == s).sum()), accuracy=round(float((pred[srcs == s] == y[srcs == s]).mean()), 3)) for s in sorted(set(srcs))}
         print(split, json.dumps(res[split]))
         print(classification_report(y, pred, labels=present, target_names=[CL[i] for i in present], digits=3))
     json.dump(res, open(f"{RUN}/report.json", "w"), indent=2)

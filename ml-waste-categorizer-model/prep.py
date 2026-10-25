@@ -83,31 +83,54 @@ for sub, cls in (("hazard", "ewaste_hazard"), ("background", "no_object"), ("pap
     for f in fs:
         jobs.append(("oi", os.path.basename(f), cls, f, None, False))
 
+TB = {
+    "plastic/plastic bags": "soft_plastic_foam", "plastic/plastic bottles": "rigid_plastic", "plastic/plastic containers": "rigid_plastic", "plastic/plastic cups": "rigid_plastic",
+    "e-waste/electrical cables": "ewaste_hazard", "e-waste/electronic chips": "ewaste_hazard", "e-waste/laptops": "ewaste_hazard", "e-waste/small appliances": "ewaste_hazard", "e-waste/smartphones": "ewaste_hazard",
+    "paper/news paper": "cardboard_paper", "paper/paper": "cardboard_paper", "cardboard": "cardboard_paper",
+    "glass": "glass", "metal/beverage cans": "metal", "metal/metal containers": "metal", "metal/spray cans": "metal",
+}
+if os.path.isdir("data/trashbox/train/TrashBox_train_dataset_subfolders"):
+    folder_source("trashbox", "data/trashbox/train/TrashBox_train_dataset_subfolders", TB, cap=500)
+
+if os.path.exists("data/coco/selected.csv"):
+    for r in pd.read_csv("data/coco/selected.csv").itertuples():
+        if os.path.exists(r.file):
+            jobs.append(("coco", f"{r.image_id}", r.cls, r.file, None if r.x < 0 else (r.x, r.y, r.w, r.h), False))
+
+for sub, cls in (("hazard", "ewaste_hazard"), ("background", "no_object"), ("paper", "cardboard_paper")):
+    for f in sorted(glob.glob(f"data/openimages_train/img/{sub}/*.jpg")):
+        jobs.append(("oitrain", os.path.basename(f), cls, f, None, False))
+
+realwaste_root = next(iter(glob.glob("data/realwaste/extract/*/RealWaste")), None)
+if realwaste_root:
+    folder_source("realwaste", realwaste_root, {"Cardboard": "cardboard_paper", "Paper": "cardboard_paper", "Glass": "glass", "Metal": "metal"})
+
 for cls in CLASSES:
     for f in sorted(glob.glob(f"data/scraped/{cls}/*.jpg")):
         jobs.append(("scrape", os.path.basename(f), cls, f, None, False))
 
-zw = "data/zerowaste/extract/splits_final_deblurred"
-ZW = {"cardboard": "cardboard_paper", "metal": "metal", "rigid_plastic": "rigid_plastic", "soft_plastic": "soft_plastic_foam"}
-ZCAP = {"train": {"rigid_plastic": 900, "metal": 400, "soft_plastic_foam": 900, "cardboard_paper": 400},
-        "val": {"rigid_plastic": 150, "metal": 60, "soft_plastic_foam": 150, "cardboard_paper": 100},
-        "test": {"rigid_plastic": 315, "metal": 63, "soft_plastic_foam": 300, "cardboard_paper": 300}}
-for sp in ("train", "val", "test"):
-    d = json.load(open(f"{zw}/{sp}/labels.json"))
-    names = {c["id"]: c["name"] for c in d["categories"]}
-    imgs = {i["id"]: i for i in d["images"]}
-    per = {}
-    for a in d["annotations"]:
-        cls = ZW.get(names[a["category_id"]])
-        x, y, w, h = a["bbox"]
-        if cls and w >= 60 and h >= 60:
-            per.setdefault(cls, []).append(a)
-    for cls, lst in per.items():
-        random.shuffle(lst)
-        for a in lst[:ZCAP[sp][cls]]:
-            im = imgs[a["image_id"]]
-            src = "zerowaste_test" if sp == "test" else "zerowaste"
-            jobs.append((src, f"{sp}{a['image_id']}", cls, f"{zw}/{sp}/data/{im['file_name']}", tuple(a["bbox"]), False))
+if os.path.isdir("data/zerowaste/extract/splits_final_deblurred"):
+    zw = "data/zerowaste/extract/splits_final_deblurred"
+    ZW = {"cardboard": "cardboard_paper", "metal": "metal", "rigid_plastic": "rigid_plastic", "soft_plastic": "soft_plastic_foam"}
+    ZCAP = {"train": {"rigid_plastic": 1100, "metal": 400, "soft_plastic_foam": 3000, "cardboard_paper": 1500},
+            "val": {"rigid_plastic": 150, "metal": 60, "soft_plastic_foam": 150, "cardboard_paper": 100},
+            "test": {"rigid_plastic": 315, "metal": 63, "soft_plastic_foam": 300, "cardboard_paper": 300}}
+    for sp in ("train", "val", "test"):
+        d = json.load(open(f"{zw}/{sp}/labels.json"))
+        names = {c["id"]: c["name"] for c in d["categories"]}
+        imgs = {i["id"]: i for i in d["images"]}
+        per = {}
+        for a in d["annotations"]:
+            cls = ZW.get(names[a["category_id"]])
+            x, y, w, h = a["bbox"]
+            if cls and w >= 60 and h >= 60:
+                per.setdefault(cls, []).append(a)
+        for cls, lst in per.items():
+            random.shuffle(lst)
+            for a in lst[:ZCAP[sp][cls]]:
+                im = imgs[a["image_id"]]
+                src = "zerowaste_test" if sp == "test" else "zerowaste"
+                jobs.append((src, f"{sp}{a['image_id']}", cls, f"{zw}/{sp}/data/{im['file_name']}", tuple(a["bbox"]), False))
 
 print("jobs", len(jobs), flush=True)
 with ThreadPoolExecutor(12) as ex:
