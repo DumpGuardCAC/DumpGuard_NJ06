@@ -13,7 +13,7 @@
       tooLong: 'Use 3 to 500 characters.',
       where: 'Where to take it', openNow: 'open now', closed: 'closed now', km: 'km', residents: 'Residents only',
       cat: 'Category', catPick: 'Pick a category', fail: 'Could not reach the server. Try again.',
-      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', zoneNo: 'We could not match this address to a zone automatically. Pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
+      zipHelp: 'Enter your ZIP code to see pickup days.', pickTown: 'Which town?', pickArea: 'Which one is yours?', approxNote: 'Zone found from the township map. Near a zone border, confirm with the township.', zoneNo: 'We could not match this address to a zone automatically. Pick your zone below.', zoneList: 'Choose my zone', zoneIntro: 'Pickup days for each zone in your town. Tap yours, or enter your address to find it.', mine: 'This is mine', matches: 'Matches your street', addrPlaceholder: '123 Main St, Edison', addrGo: 'Find my zone', addrNo: 'We could not find that address. Check the spelling and try again.', addrFound: 'Showing', choose: 'Choose...',
       next: 'Next pickups', moved: 'moved', calendar: 'Add to my calendar', calNote: 'The calendar updates itself when holidays shift pickups.', notListed: 'not listed here yet. Check your town website or call public works.',
       noZip: 'We are still finding verified pickup data for this area. Check back soon.', badZip: 'Enter a 5 digit ZIP code.', lookup: 'Look up',
       trashS: 'Trash', areaS: 'Area', recyclingS: 'Recycling', bulk: 'Bulk pickup', yard: 'Yard waste', alerts: 'Notices', counted: 'items sorted with DumpGuard, about', lb: 'lb diverted (estimate)',
@@ -343,6 +343,7 @@
   };
 
   let hint = null;
+  let approxZone = false;
   const streetCache = new Map();
   const ABBREV = [
     [/\b(avenue|ave)\b/g, 'ave'], [/\b(street|st)\b/g, 'st'], [/\b(road|rd)\b/g, 'rd'], [/\b(place|pl)\b/g, 'pl'],
@@ -399,6 +400,15 @@
     if (gj.coordinates) return pointInCoords(lng, lat, gj.coordinates, gj.type);
     return false;
   };
+  const segMeters = (x, y, a, b, ky) => {
+    const ax = (a[0] - x) * ky;
+    const ay = a[1] - y;
+    const dx = (b[0] - a[0]) * ky;
+    const dy = b[1] - a[1];
+    const len = dx * dx + dy * dy;
+    const u = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
+    return Math.hypot(ax + u * dx, ay + u * dy) * 111000;
+  };
   const loadTownStreets = async town => {
     if (streetCache.has(town)) return streetCache.get(town);
     const p = fetch(`/data/streets/${encodeURIComponent(town)}.json`)
@@ -416,6 +426,25 @@
       for (const [key, z] of Object.entries(data.zones || {})) {
         if (pointInGeoJSON(lng, lat, z.geojson)) keys.add(key);
       }
+      if (!keys.size && data.snap) {
+        const ky = Math.cos((lat * Math.PI) / 180);
+        let best = data.snap;
+        let bestKey = null;
+        for (const [key, z] of Object.entries(data.zones || {})) {
+          for (const poly of z.geojson?.coordinates || []) {
+            const ring = poly[0];
+            for (let i = 1; i < ring.length; i++) {
+              const d = segMeters(lng, lat, ring[i - 1], ring[i], ky);
+              if (d < best) {
+                best = d;
+                bestKey = key;
+              }
+            }
+          }
+        }
+        if (bestKey) keys.add(bestKey);
+      }
+      if (data.approx && keys.size) keys.approx = true;
       return keys;
     }
     if (data.type === 'streets' && road) {
@@ -446,8 +475,12 @@
   const renderAreas = async (box, b, zip, chosen) => {
     const label = a => (spanish() ? a.label_es : a.label) || a.label;
     const mineKeys = await streetZones(b.town.id, hint?.road, hint?.house, hint?.lat, hint?.lng);
-    const auto = b.groups.map(g => b.areas.filter(x => x.group === g && mineKeys.has(x.key)));
+    const auto = b.groups.map(g => {
+      const hit = b.areas.filter(x => x.group === g && mineKeys.has(x.key));
+      return hit.length ? hit : b.areas.filter(x => x.group === g && x.key.endsWith(':unknown'));
+    });
     if (mineKeys.size && auto.every(l => l.length === 1)) {
+      approxZone = Boolean(mineKeys.approx);
       lookupZip(zip, b.town.id, auto.map(l => l[0].key));
       return;
     }
@@ -489,6 +522,7 @@
       if (b.schedules.some(s => s.stream === st)) continue;
       box.appendChild(h('div', { class: 'item' }, h('b', {}, streamName(st)), h('small', {}, t('notListed'))));
     }
+    if (approxZone) box.appendChild(h('p', { class: 'sm' }, t('approxNote')));
     if (b.calendar) box.appendChild(h('p', {}, h('a', { class: 'btn dark small', href: b.calendar.webcal }, t('calendar'))));
     showAlerts(box, b, areas, mine);
   };
@@ -507,6 +541,7 @@
 
   const findAddress = async text => {
     if (!text) return;
+    approxZone = false;
     if (/^\d{5}$/.test(text)) {
       hint = null;
       lookupZip(text);

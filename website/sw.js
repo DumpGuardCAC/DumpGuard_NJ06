@@ -1,4 +1,4 @@
-const CACHE = 'dumpguard-v35';
+const CACHE = 'dumpguard-v38';
 const SHELL = [
   '/', '/index.html', '/styles.css', '/manifest.json', '/es.json', '/icon.png',
   '/js/boot.js', '/js/es.js', '/js/install.js', '/js/core.js', '/js/photo.js', '/js/report.js', '/js/map.js', '/js/gov.js', '/js/translate.js', '/js/nav.js', '/lib/leaflet.js',
@@ -44,6 +44,19 @@ self.addEventListener('fetch', e => {
       if (!cached) return network.catch(offline);
       const slow = new Promise(resolve => setTimeout(() => resolve(cached), 3000));
       return Promise.race([network, slow]).catch(() => cached);
+    })());
+    return;
+  }
+
+  if (/^\/lib\/model\.(json|bin)$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      try {
+        const res = await fetch(req, { cache: 'no-cache' });
+        remember(req, res.clone()).catch(() => {});
+        return res;
+      } catch {
+        return (await (await caches.open(CACHE)).match(req, { ignoreSearch: true })) || offline();
+      }
     })());
     return;
   }

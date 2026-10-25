@@ -93,19 +93,25 @@
 
   const drawBox = (source, b) => frameCtx.drawImage(source, b.x, b.y, b.w, b.h, 0, 0, SIZE, SIZE);
 
+  const BATCH = 8;
   const scoreBoxes = async (source, boxes) => {
     const model = await loadModel();
     const { tf } = window;
-    const out = tf.tidy(() => {
-      const batch = boxes.map(b => {
-        drawBox(source, b);
-        return tf.browser.fromPixels(frame).toFloat();
+    const probs = [];
+    for (let i = 0; i < boxes.length; i += BATCH) {
+      const part = boxes.slice(i, i + BATCH);
+      const out = tf.tidy(() => {
+        const batch = part.map(b => {
+          drawBox(source, b);
+          return tf.browser.fromPixels(frame).toFloat();
+        });
+        return model.predict(tf.stack(batch));
       });
-      return model.predict(tf.stack(batch));
-    });
-    const data = await out.data();
-    out.dispose();
-    return boxes.map((_, i) => calibrate(Array.from(data.slice(i * CLASSES.length, (i + 1) * CLASSES.length)), TEMPERATURE));
+      const data = await out.data();
+      out.dispose();
+      part.forEach((_, j) => probs.push(calibrate(Array.from(data.slice(j * CLASSES.length, (j + 1) * CLASSES.length)), TEMPERATURE)));
+    }
+    return probs;
   };
 
   const objectScore = p => Math.max(...p.filter((_, i) => CLASSES[i] !== 'no_object'));
