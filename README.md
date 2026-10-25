@@ -124,8 +124,3 @@ python train.py          # Builds execution pipeline and benchmarks matrix losse
 * `website/` - Source configurations for your live Vercel dashboard and structural pages.
 * `.gitignore` - Centralized file protection mappings.
 
-## Project Contributors & Team Matrix
-
-* **Member 1 (ML & Dataset Lead):** Dataset clustering (TACO/TrashNet/ZeroWaste), Quantized MobileNet optimization, and automated training framework deployments.
-* **Member 2 (Frontend & PWA Lead):** Multi-device responsive Next.js/Tailwind layout design, local camera viewports, and localization toggling frameworks.
-* **Member 3 (Backend & Mobile Lead):** Android Studio project initialization, gradle dependency integration, SQLite layout management, and Congressional App Challenge compliance verification.
