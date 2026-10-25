@@ -1,8 +1,0 @@
-{
-  "town": "bradley-beach",
-  "source": "https://www.bradleybeachnj.gov/trash-recycling-information/",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official trash zones published as boundary ranges plus a color-coded raster zone map only (no street index, no ArcGIS/GeoJSON). Zone text from 2025 borough calendar TRASH COLLECTION ZONES block and zone-map legend (also linked from trash page as ZONE-MAP-UPDATE-VER-3-1.jpg): Zone 1 Lake Terrace to LaReine Avenue (Mon/Thu); Zone 2 Brinley Avenue to Bradley Blvd. (Tue/Fri); Zone 3 Main Street and all 700 Blocks throughout the Borough (Mon/Fri). Street Sweeper Schedule page states sweeper zones are in accordance with trash collection zones and repeats Zone 1/2 ranges (sweeper Zones 3/4 are side-of-street splits of those same ranges; Main Street, Ocean Avenue, and 700 Blocks noted separately for sweeper). Checked: https://www.bradleybeachnj.gov/trash-recycling-information/ (zone map JPG; 2026 bulk dates; holiday makeups); https://www.bradleybeachnj.gov/wp-content/uploads/2026/01/2026-SANITATION-CALENDAR-2.pdf (image-only calendar grids, no street list); https://www.bradleybeachnj.gov/wp-content/uploads/2025/01/Bradley_Beach_Calendar_2025_PRESS.pdf (zone range text); https://www.bradleybeachnj.gov/street-sweeper-schedule/; https://www.bradleybeachnj.gov/public-works/; resident street map PDF https://www.bradleybeachnj.gov/wp-content/uploads/2022/04/bradleybeachresidentmap.pdf (no trash attribution). Do not invent streets from the raster map."
-}

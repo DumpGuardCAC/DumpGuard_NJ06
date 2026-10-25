@@ -1,8 +1,0 @@
-{
-  "town": "aberdeen",
-  "source": "https://www.aberdeennj.org/271/Trash-Recycling",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official Trash/Recycling page defines Section I (Cliffwood Beach, Cliffwood, River Gardens, Oakshades, Freneau, Heritage Estates) and Section II (Strathmore, High School Area, Woodbrook Drive, Randall Way, Storyland, Santa Fe, Heather Glenn) by neighborhood name only; same lists on legacy qscend recycling page. No alphabetical street index, collection-zone map PDF, or ArcGIS FeatureServer/MapServer polygons found. Also checked: DocumentCenter Spring Recycling Flyer (View/297) and Recycle flyer (View/296) - no street lists; Public Works page; Bidding Opportunities Notice-to-Bidders for Solid Waste and Recycling Collection Services (specs/plans by request to engineer only, not posted); Recycle Coach link (address lookup tool, no published street dump); Winter Storm / Community Calendar notices name sections by neighborhood only. areaKeys already encode Section I vs II. Do not invent streets from unofficial neighborhood boundary writeups."
-}

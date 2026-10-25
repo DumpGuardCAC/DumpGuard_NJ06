@@ -1,8 +1,0 @@
-{
-  "town": "keansburg",
-  "source": "https://keansburgnj.gov/residents/public-works/",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official Public Works FAQ defines trash by Church St / Main St boundaries only (Mon/Thu: south of Church St, entire Church St, east of Main St; Tue/Fri: north of Church St and west of Main St, entire Main St up to Church St). No alphabetical street index, collection map PDF, or ArcGIS FeatureServer/MapServer polygons found. areaKeys already encode those boundaries. Also checked keansburgnj.gov site search for street list/map/GIS; no secondary street-zone source."
-}

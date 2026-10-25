@@ -1,8 +1,0 @@
-{
-  "town": "sea-bright",
-  "source": "https://www.seabrightnj.org/",
-  "retrieved": "2026-10-25",
-  "type": "single",
-  "zones": {},
-  "notes": "Sea Bright schedules have no area_key splits in towns.json; single borough-wide schedule."
-}

@@ -1,8 +1,0 @@
-{
-  "town": "interlaken",
-  "source": "https://www.interlakenboro.com/",
-  "retrieved": "2026-10-25",
-  "type": "single",
-  "zones": {},
-  "notes": "Interlaken schedules have no area_key splits in towns.json; single borough-wide schedule."
-}

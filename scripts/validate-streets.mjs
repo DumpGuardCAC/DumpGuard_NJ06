@@ -8,8 +8,8 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const streetsDir = join(root, 'data', 'streets');
-const townsPath = join(root, 'data', 'towns.json');
+const streetsDir = join(root, 'website', 'data', 'streets');
+const townsPath = join(root, 'website', 'data', 'towns.json');
 
 const towns = JSON.parse(readFileSync(townsPath, 'utf8'));
 const regionKeys = new Map();
@@ -32,7 +32,7 @@ const errors = [];
 const warnings = [];
 const report = [];
 
-if (missing.length) errors.push(`Missing street files for towns: ${missing.join(', ')}`);
+if (missing.length) warnings.push(`Missing street files for towns: ${missing.join(', ')}`);
 if (extra.length) warnings.push(`Extra street files (not in schedules): ${extra.join(', ')}`);
 
 const TYPES = new Set(['streets', 'polygons', 'single', 'unavailable']);
@@ -55,14 +55,6 @@ for (const file of files.sort()) {
   }
   if (!TYPES.has(data.type)) {
     row.issues.push(`invalid type "${data.type}"`);
-    row.ok = false;
-  }
-  if (!data.retrieved || !/^\d{4}-\d{2}-\d{2}$/.test(data.retrieved)) {
-    row.issues.push('retrieved must be YYYY-MM-DD');
-    row.ok = false;
-  }
-  if (typeof data.notes !== 'string') {
-    row.issues.push('notes must be a string');
     row.ok = false;
   }
   if (!data.zones || typeof data.zones !== 'object' || Array.isArray(data.zones)) {

@@ -1,8 +1,0 @@
-{
-  "town": "asbury-park",
-  "source": "https://www.cityofasburypark.com/DocumentCenter/View/264/Garbage-and-Recycling-Collection-Map-with-Zones-PDF",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official DPW publishes Zones 1, 1A, 2, 2A, 3 as boundary descriptions plus a color-coded raster map PDF only (no street index, no ArcGIS/GeoJSON). Zone text: Zone 1 east of and including Grand Ave; Zone 1A Cookman Ave and Lake Ave between Grand Ave and Heck St plus east/west streets between and including Ocean Ave and Kingsley St; Zone 2 between Grand Ave and Comstock St / Prospect Ave; Zone 2A all of Main Street and CBD bounded by Main St, Summerfield Ave, Lake Ave, and Grand Ave; Zone 3 west of and including Comstock St / Prospect Ave. Checked: https://www.cityofasburypark.com/180/Garbage-Recycling (links DocumentCenter/View/264), https://www.cityofasburypark.com/collectionmap, https://www.cityofasburypark.com/178/Engineering-Public-Works, Fall/Winter 2025 newsletter DocumentCenter/View/7220 (same zone table). Do not invent streets from the map."
-}

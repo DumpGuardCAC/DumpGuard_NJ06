@@ -1,8 +1,0 @@
-{
-  "town": "perth-amboy",
-  "source": "https://cdnsm5-hosted.civiclive.com/UserFiles/Servers/Server_11204924/File/Departments/Public%20Works/2026/Holiday%20Annual%20Guidelines%20Dates%202026%20_LLdocx.pdf",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official 2026 DPW Garbage Collection Holiday Schedule PDF defines trash by Conrail tracks only: North Side (areas above the Conrail train tracks) Mon/Thu; South Side (areas below the Conrail train tracks) Tue/Fri; tracks are the official boundary. No alphabetical street index, collection map PDF, or ArcGIS FeatureServer/MapServer polygons found. areaKeys already encode those boundaries. Also checked perthamboynj.org Public Works and Recycling & Garbage Collection pages; Recycle Coach referenced for address lookup but no published street-zone list."
-}

@@ -1,8 +1,0 @@
-{
-  "town": "sayreville",
-  "source": "https://www.sayreville.com/cn/webpage.cfm?tpid=8945",
-  "retrieved": "2026-10-25",
-  "type": "unavailable",
-  "zones": {},
-  "notes": "Official Sanitation Division page and 2025 Recycling/Sanitation Guide PDF define trash Zones I/II/III by neighborhood names only (e.g. Sayrewoods, Morgan, Sayreville Proper), not an alphabetical street index. MCIA recycling (2026 Bi-Weekly page tpid=18888 and Middlesex County curbside schedules) likewise lists neighborhood/day groups only; areaKeys encode those neighborhood descriptions. Forms Center Public Works lists ZoneI.pdf as a category label with no downloadable file (linked forms are Clothing Bin, Road Opening, List of Parks). No ArcGIS FeatureServer/MapServer or geojson zone polygons found for Sayreville. Address lookup is via Recycle Coach only. Also checked: https://www.sayreville.com/documents/Sayreville%20Recycling%20Sanitation%202025%20Guide.pdf ; https://www.sayreville.com/cn/webpage.cfm?tpid=18888 ; https://www.sayreville.com/cn/webpage.cfm?tpid=12952 ; https://www.middlesexcountynj.gov/government/departments/department-of-economic-development/middlesex-county-improvement-authority/recycling/curbside-recycling-schedules ; https://www.sayreville.com/cn/formcenter/?did=1494. Did not invent street lists from neighborhood names."
-}
