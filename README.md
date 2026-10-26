@@ -36,15 +36,6 @@ It answers three questions instantly:
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A[Phone or browser] -->|camera frames stay here| B[On-device model<br/>TensorFlow.js, 5.9 MB]
-    A -->|schedules, reports| C[Vercel serverless API]
-    C --> D[(Postgres)]
-    E[Android app<br/>Capacitor] -.same web app.-> A
-    F[Service worker] -.caches app + model.-> A
-```
-
 | Layer | What we used |
 |---|---|
 | Frontend | Plain HTML, CSS and JavaScript, no framework. A service worker makes Identify work offline after the first visit. |
@@ -56,13 +47,11 @@ flowchart LR
 
 A fine-tuned MobileNetV3 classifier with 7 classes: rigid plastic, soft plastic/foam, cardboard/paper, metal, glass, e-waste/hazard, and no object. Float16 quantization brought the TensorFlow.js export down to about 5.9 MB.
 
-```mermaid
-xychart-beta
-    title "Held-out accuracy (%)"
-    x-axis ["Validation", "Test (in-distribution)", "External set"]
-    y-axis "Accuracy" 0 --> 100
-    bar [85.9, 82.6, 64.3]
-```
+| Split | Accuracy |
+|---|---|
+| Validation | 85.9% |
+| Test (in-distribution) | 82.6% |
+| External set | 64.3% |
 
 Rigid plastic is our weakest class at 69% recall; it's sometimes confused with soft plastic or foam.
 
