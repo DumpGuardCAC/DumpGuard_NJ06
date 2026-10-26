@@ -6,7 +6,7 @@ DumpGuard answers three questions: can I recycle this, when is my pickup, and ho
 
 ## Features
 
-- **Identify.** Point the camera at an item, or search by name. The app gives a yes or no recyclable verdict and your town's rule: trash, recycling, or special drop-off. When the model is unsure it says so and offers the closest matches.
+- **Identify.** Point the camera at an item and a live tracking box locks onto it as you move, cropping tight before the model ever sees a frame. Search by name works too. The app gives a yes or no recyclable verdict and your town's rule: trash, recycling, or special drop-off. When the model is unsure it says so and offers the closest matches.
 - **Pickup days.** Enter an address and see the next trash, recycling, bulk and yard waste dates for your zone. 25 towns resolve an address to a zone from street lists or traced zone maps. The rest use a zone picker, and towns whose zone data is not yet published say so in the app.
 - **Report dumping.** Photograph the site, mark the location and submit. You get a tracking code to check status. Photo metadata is stripped, and the public map only shows clusters of three or more reports.
 - **Local resources.** Drop-off locations in one place, in English and Spanish.
@@ -20,9 +20,10 @@ DumpGuard answers three questions: can I recycle this, when is my pickup, and ho
 
 ## Model
 
-- 39,110 images from public waste datasets plus our own scraped images, grouped into train, validation, in-distribution test and an external test set.
+- 39,110 images: TrashNet, TACO, Garbage12, RealWaste, ZeroWaste, TrashBox, Open Images and a curated e-waste set, topped up with our own openly-licensed scrapes (Openverse, Wikimedia Commons, Pixabay, Pexels) for the classes public datasets covered thinly.
+- CLIP and OwlViT auto-label and clean the raw pull -- relabeling, cropping to the right object, dropping bad examples -- before a human ever looks at it. Perceptual-hash dedup keeps near-duplicates from leaking between train and the held-out splits.
 - Held-out accuracy: 85.9% validation, 82.6% in-distribution test, 64.3% on the harder external set.
-- Phase 1 trains a new head with the base frozen. Phase 2 fine-tunes the upper layers with BatchNorm frozen.
+- Phase 1 trains a new head with the base frozen; phase 2 fine-tunes the upper layers with BatchNorm frozen.
 
 ## Repo layout
 
@@ -58,4 +59,6 @@ python export.py
 
 ## Data
 
-Schedules and rules come from each town's official calendars and pages and were checked by hand. Always confirm with your town. The app says so wherever a zone is approximate.
+- **Town rules and schedules** come from each town's official calendars and pages, read and entered by hand, town by town, over several research passes. Always confirm with your town; the app says so wherever a zone is approximate.
+- **Pickup zones** for towns without an official address lookup were traced by hand from township zone maps into street lists and polygons, then checked against real addresses. Towns we couldn't trace confidently fall back to a plain zone picker instead of guessing.
+- **Training images** are a mix of public waste-sorting datasets and our own scrapes of openly-licensed (Creative Commons / Pixabay / Pexels) photos, pulled to fill in classes the public data covered thinly, then auto-cleaned (see Model above) rather than hand-sorted one by one.
