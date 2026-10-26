@@ -1,27 +1,23 @@
 import os, sys, json
 os.environ["KERAS_BACKEND"] = "torch"
-import numpy as np, keras
+import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 import train as T
+from dataset import make_loader
+from model import build_model
 
 RUN = sys.argv[1]
 CL = T.CLASSES
 IMG = T.IMG
-
-
-def build():
-    base = keras.applications.MobileNetV3Large(input_shape=(IMG, IMG, 3), include_top=False, weights=None,
-                                               include_preprocessing=True, pooling="avg")
-    x = keras.layers.Dropout(0.3)(base.output)
-    return keras.Model(base.input, keras.layers.Dense(7, activation="softmax", name="probs")(x))
+WORKERS = int(os.environ.get("DG_WORKERS", 16))
 
 
 def predict(model, split):
+    dl = make_loader(T.df, split, aug=False, shuffle=False, img=IMG, batch_size=128, num_workers=WORKERS)
     d = T.df[T.df.split == split]
-    dl = T.DataLoader(T.DS(d, False), batch_size=128, shuffle=False, num_workers=int(os.environ.get("DG_WORKERS", 16)))
     P = np.concatenate([model.predict_on_batch(b[0].numpy()) for b in dl])
     return np.asarray(P, dtype=np.float64), np.array([T.C2I[c] for c in d.cls])
 
@@ -35,7 +31,7 @@ def nll_T(P, y, t):
 
 
 def main():
-    model = build()
+    model, _ = build_model(IMG, weights=None)
     model.load_weights(f"{RUN}/best.weights.h5")
     res = {}
     Pv, yv = predict(model, "val")
@@ -50,18 +46,18 @@ def main():
         present = sorted(set(y))
         acc = float((pred == y).mean())
         keep = conf >= 0.65
-        cm = confusion_matrix(y, pred, labels=range(7))
+        cm = confusion_matrix(y, pred, labels=range(len(CL)))
         rec = {CL[i]: round(float(cm[i, i] / max(cm[i].sum(), 1)), 3) for i in present}
         res[split] = dict(n=int(len(y)), accuracy=round(acc, 4), recall=rec,
-                          frac_above_65=round(float(keep.mean()), 3),
-                          acc_above_65=round(float((pred[keep] == y[keep]).mean()), 4) if keep.any() else None)
+                           frac_above_65=round(float(keep.mean()), 3),
+                           acc_above_65=round(float((pred[keep] == y[keep]).mean()), 4) if keep.any() else None)
         fig, ax = plt.subplots(figsize=(7, 6))
         cmn = cm / np.maximum(cm.sum(1, keepdims=True), 1)
         ax.imshow(cmn, cmap="Greys", vmin=0, vmax=1)
-        ax.set_xticks(range(7)); ax.set_yticks(range(7))
+        ax.set_xticks(range(len(CL))); ax.set_yticks(range(len(CL)))
         ax.set_xticklabels(CL, rotation=45, ha="right"); ax.set_yticklabels(CL)
-        for i in range(7):
-            for j in range(7):
+        for i in range(len(CL)):
+            for j in range(len(CL)):
                 if cm[i, j]:
                     ax.text(j, i, cm[i, j], ha="center", va="center", color="white" if cmn[i, j] > .5 else "black", fontsize=8)
         ax.set_xlabel("predicted"); ax.set_ylabel("true"); ax.set_title(f"{split} (acc {acc:.3f})")

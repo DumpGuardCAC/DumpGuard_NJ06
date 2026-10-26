@@ -66,8 +66,8 @@ for cls, qs in Q.items():
 
 import pandas as pd
 from PIL import Image, ImageOps
-import clean_labels as zs
-from common import square_crop
+import preprocess as zs
+from dataset import square_crop, CLASSES
 
 S = int(os.environ.get("DG_S", 256))
 O = "data/web"

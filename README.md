@@ -31,7 +31,7 @@ DumpGuard answers three questions: can I recycle this, when is my pickup, and ho
 | `website/` | The web app (plain JavaScript, HTML, CSS), service worker, TF.js model in `lib/`, API in `api/`, town data in `data/` |
 | `website/data/towns.json` | Town schedules, facilities, ZIP codes, and each town's street lists or zone polygons (used to turn an address into a pickup zone) |
 | `android/` | Capacitor Android project |
-| `ml-waste-categorizer-model/` | Dataset preparation, training, evaluation and export scripts |
+| `ml-waste-categorizer-model/` | `preprocess.py` (dataset prep and cleaning), `dataset.py` (classes, crops, loaders), `model.py` (network definition), `train.py`, `evaluate.py`, `export.py` (TF.js export) |
 | `.github/workflows/` | Builds and publishes the Android APK |
 
 ## Running it
