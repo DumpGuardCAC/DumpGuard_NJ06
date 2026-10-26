@@ -5,7 +5,9 @@ node_modules/
 *.log
 __pycache__/
 ml-waste-categorizer-model/.venv/
+ml-waste-categorizer-model/.venv-*/
 ml-waste-categorizer-model/data/
+ml-waste-categorizer-model/out/
 android/www/
 android/build/
 android/app/build/
