@@ -16,7 +16,8 @@ nav a.act{border-color:var(--green)}
 .hero svg{position:absolute;inset:auto 0 0 0;width:100%;height:26%}
 .hero .in{position:relative;z-index:2;padding:90px 6vw 110px}
 .hero h1{margin:0;font-family:Belleza,Georgia,serif;font-size:clamp(2.4rem,10.5vw,9rem);font-weight:400;line-height:1.1;letter-spacing:.04em;display:inline-block;color:var(--green)}
-.hero p{font-size:clamp(.9rem,2vw,1.2rem);font-weight:600;color:var(--blue);letter-spacing:.2em;text-transform:uppercase;margin:18px 0 40px}
+.hero p{font-size:clamp(.9rem,2vw,1.2rem);font-weight:600;color:var(--blue);letter-spacing:.2em;text-transform:uppercase;margin:18px 0 6px}
+.hero p.sub{font-size:clamp(.68rem,1.3vw,.85rem);font-weight:500;letter-spacing:.12em;opacity:.7;margin:0 0 40px}
 .btn{display:inline-block;background:#fff;color:var(--slate);padding:14px 36px;border-radius:8px;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;border:0;cursor:pointer;font-family:inherit;transition:.25s;text-decoration:none}
 .btn:hover{transform:translateY(-1px)}
 .btn.dark{background:var(--blue);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.full{width:100%}
@@ -158,7 +159,8 @@ html.gated nav,html.gated .view{display:none!important}
   .hero{height:auto;min-height:52svh;padding-top:calc(52px + env(safe-area-inset-top,0px))}
   .hero .in{padding:36px 20px 90px}
   .hero h1{font-size:clamp(2.6rem,13vw,3.6rem)}
-  .hero p{font-size:.78rem;letter-spacing:.1em;margin:14px 0 22px;line-height:1.5}
+  .hero p{font-size:.78rem;letter-spacing:.1em;margin:14px 0 4px;line-height:1.5}
+  .hero p.sub{font-size:.62rem;margin:0 0 22px;line-height:1.4}
   .hero .btn{display:none}
   #v-home .s h2{font-size:1.2rem;margin:0 0 10px}
   .does{list-style:none;padding:0;margin:0;display:grid;gap:10px}
