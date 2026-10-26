@@ -416,11 +416,18 @@
     const u = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
     return Math.hypot(ax + u * dx, ay + u * dy) * 111000;
   };
+  let townsDataPromise = null;
+  const loadTownsData = () => {
+    if (!townsDataPromise) {
+      townsDataPromise = fetch('/data/towns.json')
+        .then(r => (r.ok ? r.json() : null))
+        .catch(() => null);
+    }
+    return townsDataPromise;
+  };
   const loadTownStreets = async town => {
     if (streetCache.has(town)) return streetCache.get(town);
-    const p = fetch(`/data/streets/${encodeURIComponent(town)}.json`)
-      .then(r => (r.ok ? r.json() : null))
-      .catch(() => null);
+    const p = loadTownsData().then(data => data?.streets?.[town] ?? null);
     streetCache.set(town, p);
     return p;
   };

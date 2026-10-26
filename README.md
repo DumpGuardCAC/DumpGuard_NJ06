@@ -29,10 +29,9 @@ DumpGuard answers three questions: can I recycle this, when is my pickup, and ho
 | Path | What it holds |
 |---|---|
 | `website/` | The web app (plain JavaScript, HTML, CSS), service worker, TF.js model in `lib/`, API in `api/`, town data in `data/` |
-| `website/data/streets/` | Per-town street lists and zone polygons used to turn an address into a pickup zone |
+| `website/data/towns.json` | Town schedules, facilities, ZIP codes, and each town's street lists or zone polygons (used to turn an address into a pickup zone) |
 | `android/` | Capacitor Android project |
 | `ml-waste-categorizer-model/` | Dataset preparation, training, evaluation and export scripts |
-| `scripts/` | Data validation |
 | `.github/workflows/` | Builds and publishes the Android APK |
 
 ## Running it
@@ -45,12 +44,6 @@ npm install
 export DATABASE_URL=postgres://...
 npm run migrate    # create the schema
 npm run seed       # load towns, items, schedules and facilities
-```
-
-Check the town data before publishing:
-
-```bash
-node scripts/validate-streets.mjs
 ```
 
 Android: from `android/`, run `npm install && npm run sync`, then open the project in Android Studio. The GitHub Actions workflow does the same and publishes a signed APK as a release.
