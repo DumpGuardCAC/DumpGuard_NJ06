@@ -148,13 +148,12 @@
     return ((cut + 1) / bins) * max;
   };
 
-  const tighten = (source, box, vw, vh) => {
-    const pad = 0.35;
+  const tighten = (source, box, vw, vh, pad = 0.35, size = PROBE) => {
     const ex = Math.max(0, box.x - box.w * pad);
     const ey = Math.max(0, box.y - box.h * pad);
     const ew = Math.min(vw, box.x + box.w * (1 + pad)) - ex;
     const eh = Math.min(vh, box.y + box.h * (1 + pad)) - ey;
-    const sc = PROBE / Math.max(ew, eh);
+    const sc = size / Math.max(ew, eh);
     const pw = Math.max(8, Math.round(ew * sc));
     const ph = Math.max(8, Math.round(eh * sc));
     probe.width = pw;
@@ -236,7 +235,7 @@
     fit.w = Math.min(fit.w, vw - fit.x);
     fit.h = Math.min(fit.h, vh - fit.y);
     const ratio = (fit.w * fit.h) / (box.w * box.h);
-    return ratio > 0.12 && ratio < 4 ? fit : null;
+    return ratio > 0.12 && ratio < (pad > 1 ? 30 : 4) ? fit : null;
   };
 
   const RECTS = [[1, 0.75], [0.75, 1], [0.85, 0.55], [0.55, 0.85], [0.7, 0.7], [1, 0.5]];
@@ -484,7 +483,7 @@
             square = boxes[pick];
             let fit = null;
             for (let pass = 0, from = square; pass < 5; pass++) {
-              const next = tighten(video, from, video.videoWidth, video.videoHeight);
+              const next = (pass ? null : tighten(video, from, video.videoWidth, video.videoHeight, 8, 96)) || tighten(video, from, video.videoWidth, video.videoHeight);
               if (!next) break;
               const change = Math.abs(next.w * next.h - from.w * from.h) / (from.w * from.h);
               fit = next;
