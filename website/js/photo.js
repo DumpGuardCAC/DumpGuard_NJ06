@@ -214,6 +214,16 @@
       if (inside > foundScore) { foundScore = inside; found = { x0, y0, x1, y1 }; }
     }
     if (!found) return null;
+    const clipped = (found.x0 <= 0 && ex > 0) || (found.y0 <= 0 && ey > 0) || (found.x1 >= pw - 1 && ex + ew < vw) || (found.y1 >= ph - 1 && ey + eh < vh);
+    if (clipped) {
+      const cx = box.x + box.w / 2;
+      const cy = box.y + box.h / 2;
+      const gw = Math.min(vw, box.w * 1.6);
+      const gh = Math.min(vh, box.h * 1.6);
+      const gx = Math.min(Math.max(0, cx - gw / 2), vw - gw);
+      const gy = Math.min(Math.max(0, cy - gh / 2), vh - gh);
+      return { x: gx, y: gy, w: gw, h: gh };
+    }
     const grow = 0.5;
     const w = (found.x1 - found.x0 + 1 + grow * 2) / sc;
     const h = (found.y1 - found.y0 + 1 + grow * 2) / sc;
@@ -226,7 +236,7 @@
     fit.w = Math.min(fit.w, vw - fit.x);
     fit.h = Math.min(fit.h, vh - fit.y);
     const ratio = (fit.w * fit.h) / (box.w * box.h);
-    return ratio > 0.12 && ratio < 1.6 ? fit : null;
+    return ratio > 0.12 && ratio < 4 ? fit : null;
   };
 
   const RECTS = [[1, 0.75], [0.75, 1], [0.85, 0.55], [0.55, 0.85], [0.7, 0.7], [1, 0.5]];
@@ -473,7 +483,7 @@
             });
             square = boxes[pick];
             let fit = null;
-            for (let pass = 0, from = square; pass < 3; pass++) {
+            for (let pass = 0, from = square; pass < 5; pass++) {
               const next = tighten(video, from, video.videoWidth, video.videoHeight);
               if (!next) break;
               const change = Math.abs(next.w * next.h - from.w * from.h) / (from.w * from.h);
