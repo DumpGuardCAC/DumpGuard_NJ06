@@ -1,5 +1,7 @@
 # DumpGuard NJ
 
+https://dumpguard.vercel.app/#home
+
 A recycling and illegal-dumping app for New Jersey residents. Built by Saanvika Govindaraj, Vedant Daga and Nethra Ramkumar for the Congressional App Challenge 2026, District NJ-06.
 
 DumpGuard answers three questions: can I recycle this, when is my pickup, and how do I report dumping.
